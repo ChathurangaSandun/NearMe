@@ -5,6 +5,7 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'components/components.dart';
 import 'helper/ui_helper.dart';
@@ -31,6 +32,7 @@ class _GoogleMapState extends State<GoogleMapPage>
 
   static LatLng _initialPosition;
   final Set<Marker> _markers = {};
+  static  LatLng _lastMapPosition = _initialPosition;
 
   //google map
   Completer<GoogleMapController> _mapController = Completer();
@@ -51,7 +53,7 @@ class _GoogleMapState extends State<GoogleMapPage>
 
   // google map
   static final CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(6.913452, 79.854703),
+    target:  LatLng(6.913452, 79.854703),
     zoom: 14.4746,
   );
 
@@ -155,6 +157,10 @@ class _GoogleMapState extends State<GoogleMapPage>
     animationControllerMenu.forward();
   }
 
+  onCameraMove(CameraPosition position) {
+    _lastMapPosition = position.target;
+  }
+
   @override
   Widget build(BuildContext context) {
     screenWidth = MediaQuery.of(context).size.width;
@@ -171,6 +177,7 @@ class _GoogleMapState extends State<GoogleMapPage>
         child: Stack(
           children: <Widget>[
             GoogleMap(
+              markers: _markers,
               myLocationEnabled: true,
               mapType: MapType.normal,
               initialCameraPosition: _kGooglePlex,
@@ -179,6 +186,7 @@ class _GoogleMapState extends State<GoogleMapPage>
                 isCreatedMap = true;
                 changeGoogleMapStyle();
               },
+              
             ),
             //explore
             ExploreWidget(
@@ -288,6 +296,7 @@ class _GoogleMapState extends State<GoogleMapPage>
               height: 71,
               icon: Icons.my_location,
               iconColor: Colors.blue,
+              doAction: _getCurrentMyLocation,
             ),
             //menu button
             Positioned(
@@ -336,6 +345,7 @@ class _GoogleMapState extends State<GoogleMapPage>
   void initState() {
     super.initState();
     SystemChrome.setEnabledSystemUIOverlays([]);
+    _getUserLocation();
   }
 
   @override
@@ -359,4 +369,37 @@ class _GoogleMapState extends State<GoogleMapPage>
     final GoogleMapController controller = await _mapController.future;
     controller.setMapStyle(mapStyle);
   }
+
+  void _getUserLocation() async {
+    Position position = await Geolocator()
+        .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    List<Placemark> placemark = await Geolocator()
+        .placemarkFromCoordinates(position.latitude, position.longitude);
+    setState(() {
+      _initialPosition = LatLng(position.latitude, position.longitude);
+      print('${placemark[0].name}');
+      print(position.latitude.toString());
+      print(position.longitude.toString());
+      
+    });
+  }
+
+  _onCameraMove(CameraPosition position) {
+    _lastMapPosition = position.target;
+  }
+
+  void _getCurrentMyLocation() {
+    setState(() {
+      final marker = Marker(
+          markerId: MarkerId("curr_loc"),
+          position: LatLng(_initialPosition.latitude, _initialPosition.longitude),
+          infoWindow: InfoWindow(title: 'Your Location'),
+      );
+      _markers.add(marker);  
+    });
+    
+    
+  }
+
+
 }
