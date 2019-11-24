@@ -51,7 +51,6 @@ class _GoogleMapState extends State<GoogleMapPage>
 
   // google map
   static final CameraPosition _kGooglePlex = CameraPosition(
-    
     target: LatLng(6.913452, 79.854703),
     zoom: 14.4746,
   );
@@ -157,14 +156,6 @@ class _GoogleMapState extends State<GoogleMapPage>
   }
 
   @override
-  void initState() {
-    super.initState();
-    SystemChrome.setEnabledSystemUIOverlays([]);
-    
-  }
-
-
-  @override
   Widget build(BuildContext context) {
     screenWidth = MediaQuery.of(context).size.width;
     screenHeight = MediaQuery.of(context).size.height;
@@ -179,18 +170,16 @@ class _GoogleMapState extends State<GoogleMapPage>
         height: screenHeight,
         child: Stack(
           children: <Widget>[
-            //google map
             GoogleMap(
               myLocationEnabled: true,
               mapType: MapType.normal,
-              initialCameraPosition:_kGooglePlex,
+              initialCameraPosition: _kGooglePlex,
               onMapCreated: (GoogleMapController controller) {
                 _mapController.complete(controller);
                 isCreatedMap = true;
                 changeGoogleMapStyle();
               },
             ),
-
             //explore
             ExploreWidget(
               currentExplorePercent: currentExplorePercent,
@@ -227,7 +216,7 @@ class _GoogleMapState extends State<GoogleMapPage>
             //search menu background
             offsetSearch != 0
                 ? Positioned(
-                    top: realH(100),
+                    bottom: realH(88),
                     left: realW((standardWidth - 320) / 2),
                     width: realW(320),
                     height: realH(135 * currentSearchPercent),
@@ -289,12 +278,11 @@ class _GoogleMapState extends State<GoogleMapPage>
                 Color(0xFF1270E3),
               ]),
             ),
-
             //my_location button
             MapButton(
               currentSearchPercent: currentSearchPercent,
               currentExplorePercent: currentExplorePercent,
-              bottom: 150,
+              bottom: 148,
               offsetX: -68,
               width: 68,
               height: 71,
@@ -342,6 +330,12 @@ class _GoogleMapState extends State<GoogleMapPage>
         ),
       ),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    SystemChrome.setEnabledSystemUIOverlays([]);
   }
 
   @override
