@@ -5,6 +5,7 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'components/components.dart';
 import 'helper/ui_helper.dart';
@@ -31,7 +32,8 @@ class _GoogleMapState extends State<GoogleMapPage>
 
   static LatLng _initialPosition;
   final Set<Marker> _markers = {};
-
+  static LatLng _lastMapPosition = _initialPosition;
+  BitmapDescriptor _myIcon;
   //google map
   Completer<GoogleMapController> _mapController = Completer();
 
@@ -52,7 +54,7 @@ class _GoogleMapState extends State<GoogleMapPage>
   // google map
   static final CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(6.913452, 79.854703),
-    zoom: 14.4746,
+    zoom: 14.0,
   );
 
   /// search drag callback
@@ -155,6 +157,10 @@ class _GoogleMapState extends State<GoogleMapPage>
     animationControllerMenu.forward();
   }
 
+  onCameraMove(CameraPosition position) {
+    _lastMapPosition = position.target;
+  }
+
   @override
   Widget build(BuildContext context) {
     screenWidth = MediaQuery.of(context).size.width;
@@ -171,7 +177,10 @@ class _GoogleMapState extends State<GoogleMapPage>
         child: Stack(
           children: <Widget>[
             GoogleMap(
+              markers: _markers,
               myLocationEnabled: true,
+              myLocationButtonEnabled: false,
+              mapToolbarEnabled: false,
               mapType: MapType.normal,
               initialCameraPosition: _kGooglePlex,
               onMapCreated: (GoogleMapController controller) {
@@ -288,6 +297,7 @@ class _GoogleMapState extends State<GoogleMapPage>
               height: 71,
               icon: Icons.my_location,
               iconColor: Colors.blue,
+              doAction: _getCurrentMyLocation,
             ),
             //menu button
             Positioned(
@@ -336,6 +346,13 @@ class _GoogleMapState extends State<GoogleMapPage>
   void initState() {
     super.initState();
     SystemChrome.setEnabledSystemUIOverlays([]);
+    _getUserLocation();
+
+    BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(128, 128)),
+            'assets/icons8-user-location.png')
+        .then((onValue) {
+      _myIcon = onValue;
+    });
   }
 
   @override
@@ -358,5 +375,42 @@ class _GoogleMapState extends State<GoogleMapPage>
     // https://www.youtube.com/watch?v=XAowXcmQ-kA
     final GoogleMapController controller = await _mapController.future;
     controller.setMapStyle(mapStyle);
+  }
+
+  void _getUserLocation() async {
+    Position position = await Geolocator()
+        .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    List<Placemark> placemark = await Geolocator()
+        .placemarkFromCoordinates(position.latitude, position.longitude);
+    setState(() {
+      _initialPosition = LatLng(position.latitude, position.longitude);
+      print('${placemark[0].name}');
+      print(position.latitude.toString());
+      print(position.longitude.toString());
+      //_getCurrentMyLocation();
+    });
+  }
+
+  _onCameraMove(CameraPosition position) {
+    _lastMapPosition = position.target;
+  }
+
+  void _getCurrentMyLocation() async {
+    setState(() {
+      final marker = Marker(
+        markerId: MarkerId("curr_loc"),
+        position: LatLng(_initialPosition.latitude, _initialPosition.longitude),
+        infoWindow: InfoWindow(title: 'Your Location'),
+        icon: _myIcon,
+      );
+      _markers.add(marker);
+    });
+
+    final GoogleMapController controller = await _mapController.future;
+    controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+      target: LatLng(_initialPosition.latitude, _initialPosition.longitude),
+      zoom: 12,
+      tilt: 50.0,
+    )));
   }
 }
