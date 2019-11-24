@@ -32,8 +32,8 @@ class _GoogleMapState extends State<GoogleMapPage>
 
   static LatLng _initialPosition;
   final Set<Marker> _markers = {};
-  static  LatLng _lastMapPosition = _initialPosition;
-
+  static LatLng _lastMapPosition = _initialPosition;
+  BitmapDescriptor _myIcon;
   //google map
   Completer<GoogleMapController> _mapController = Completer();
 
@@ -53,8 +53,8 @@ class _GoogleMapState extends State<GoogleMapPage>
 
   // google map
   static final CameraPosition _kGooglePlex = CameraPosition(
-    target:  LatLng(6.913452, 79.854703),
-    zoom: 14.4746,
+    target: LatLng(6.913452, 79.854703),
+    zoom: 14.0,
   );
 
   /// search drag callback
@@ -179,6 +179,8 @@ class _GoogleMapState extends State<GoogleMapPage>
             GoogleMap(
               markers: _markers,
               myLocationEnabled: true,
+              myLocationButtonEnabled: false,
+              mapToolbarEnabled: false,
               mapType: MapType.normal,
               initialCameraPosition: _kGooglePlex,
               onMapCreated: (GoogleMapController controller) {
@@ -186,7 +188,6 @@ class _GoogleMapState extends State<GoogleMapPage>
                 isCreatedMap = true;
                 changeGoogleMapStyle();
               },
-              
             ),
             //explore
             ExploreWidget(
@@ -346,6 +347,12 @@ class _GoogleMapState extends State<GoogleMapPage>
     super.initState();
     SystemChrome.setEnabledSystemUIOverlays([]);
     _getUserLocation();
+
+    BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(128, 128)),
+            'assets/icons8-user-location.png')
+        .then((onValue) {
+      _myIcon = onValue;
+    });
   }
 
   @override
@@ -380,7 +387,7 @@ class _GoogleMapState extends State<GoogleMapPage>
       print('${placemark[0].name}');
       print(position.latitude.toString());
       print(position.longitude.toString());
-      
+      //_getCurrentMyLocation();
     });
   }
 
@@ -388,18 +395,22 @@ class _GoogleMapState extends State<GoogleMapPage>
     _lastMapPosition = position.target;
   }
 
-  void _getCurrentMyLocation() {
+  void _getCurrentMyLocation() async {
     setState(() {
       final marker = Marker(
-          markerId: MarkerId("curr_loc"),
-          position: LatLng(_initialPosition.latitude, _initialPosition.longitude),
-          infoWindow: InfoWindow(title: 'Your Location'),
+        markerId: MarkerId("curr_loc"),
+        position: LatLng(_initialPosition.latitude, _initialPosition.longitude),
+        infoWindow: InfoWindow(title: 'Your Location'),
+        icon: _myIcon,
       );
-      _markers.add(marker);  
+      _markers.add(marker);
     });
-    
-    
+
+    final GoogleMapController controller = await _mapController.future;
+    controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+      target: LatLng(_initialPosition.latitude, _initialPosition.longitude),
+      zoom: 12,
+      tilt: 50.0,
+    )));
   }
-
-
 }
