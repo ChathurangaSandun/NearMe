@@ -11,7 +11,7 @@ class SearchBackWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      bottom: realH(53),
+      top: realH(53),
       right: realW(27),
       child: Opacity(
         opacity: currentSearchPercent,

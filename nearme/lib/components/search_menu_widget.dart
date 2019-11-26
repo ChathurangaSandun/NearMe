@@ -20,11 +20,11 @@ class SearchMenuWidget extends StatelessWidget {
                   padding: EdgeInsets.symmetric(horizontal: realW(20.0)),
                   child: Row(
                     children: <Widget>[
-                      _buildSearchMenuItem(Icons.home, "Home"),
+                      _buildSearchMenuItem(Icons.my_location, "My Location"),
                       Padding(
                         padding: EdgeInsets.only(left: realW(16)),
                       ),
-                      _buildSearchMenuItem(Icons.work, "Work")
+                     // _buildSearchMenuItem(Icons.work, "Work")
                     ],
                   ),
                 )),

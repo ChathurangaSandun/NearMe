@@ -188,16 +188,7 @@ class _GoogleMapState extends State<GoogleMapPage>
                 isCreatedMap = true;
                 changeGoogleMapStyle();
               },
-            ),
-            //explore
-            ExploreWidget(
-              currentExplorePercent: currentExplorePercent,
-              currentSearchPercent: currentSearchPercent,
-              animateExplore: animateExplore,
-              isExploreOpen: isExploreOpen,
-              onVerticalDragUpdate: onExploreVerticalUpdate,
-              onPanDown: () => animationControllerExplore?.stop(),
-            ),
+            ),            
             //blur
             offsetSearch != 0
                 ? BackdropFilter(
@@ -215,38 +206,11 @@ class _GoogleMapState extends State<GoogleMapPage>
                     padding: const EdgeInsets.all(0),
                   ),
             //explore content
-            ExploreContentWidget(
-              currentExplorePercent: currentExplorePercent,
-            ),
+           
             //recent search
             RecentSearchWidget(
               currentSearchPercent: currentSearchPercent,
-            ),
-            //search menu background
-            offsetSearch != 0
-                ? Positioned(
-                    bottom: realH(88),
-                    left: realW((standardWidth - 320) / 2),
-                    width: realW(320),
-                    height: realH(135 * currentSearchPercent),
-                    child: Opacity(
-                      opacity: currentSearchPercent,
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(realW(33)),
-                                topRight: Radius.circular(realW(33)))),
-                      ),
-                    ),
-                  )
-                : const Padding(
-                    padding: const EdgeInsets.all(0),
-                  ),
-            //search menu
-            SearchMenuWidget(
-              currentSearchPercent: currentSearchPercent,
-            ),
+            ),            
             //search
             SearchWidget(
               currentSearchPercent: currentSearchPercent,
@@ -260,23 +224,12 @@ class _GoogleMapState extends State<GoogleMapPage>
             SearchBackWidget(
               currentSearchPercent: currentSearchPercent,
               animateSearch: animateSearch,
-            ),
-            //layer button
-            // MapButton(
-            //   currentExplorePercent: currentExplorePercent,
-            //   currentSearchPercent: currentSearchPercent,
-            //   bottom: 243,
-            //   offsetX: -71,
-            //   width: 71,
-            //   height: 71,
-            //   isRight: false,
-            //   icon: Icons.layers,
-            // ),
+            ),           
             //directions button
             MapButton(
               currentSearchPercent: currentSearchPercent,
               currentExplorePercent: currentExplorePercent,
-              bottom: 243,
+              bottom: 175,
               offsetX: -68,
               width: 68,
               height: 71,
@@ -291,7 +244,7 @@ class _GoogleMapState extends State<GoogleMapPage>
             MapButton(
               currentSearchPercent: currentSearchPercent,
               currentExplorePercent: currentExplorePercent,
-              bottom: 148,
+              bottom: 280 ,
               offsetX: -68,
               width: 68,
               height: 71,

@@ -10,7 +10,7 @@ class RecentSearchWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return currentSearchPercent != 0
         ? Positioned(
-            top: realH(-(75.0 + 494.0) + (75 + 75.0 + 494.0) * currentSearchPercent),
+            bottom: realH(-(494.0) + (180+ 494.0) * currentSearchPercent),
             left: realW((standardWidth - 320) / 2),
             width: realW(320),
             height: realH(494),

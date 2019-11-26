@@ -27,7 +27,7 @@ class ExploreWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Positioned(
         bottom: realH(-122 * currentSearchPercent),
-        left: (screenWidth - realW(159 + (standardWidth - 159) * currentExplorePercent)) / 2,
+        left: (screenWidth - realW(159 + (standardWidth - 159) * currentExplorePercent)) /2,
         child: GestureDetector(
           onTap: () {
             animateExplore(!isExploreOpen);

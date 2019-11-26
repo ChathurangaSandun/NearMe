@@ -3,7 +3,7 @@ import '../helper/ui_helper.dart';
 
 class ExploreContentWidget extends StatelessWidget {
   final double currentExplorePercent;
-  final placeName = const ["Authentic\nrestaurant", "Famous\nmonuments", "Weekend\ngetaways"];
+  final placeName = const ["Galleface\nHotel", "Galleface\nHotel", "Galleface\nHotel"];
   const ExploreContentWidget({Key key, this.currentExplorePercent}) : super(key: key);
 
   @override
@@ -69,12 +69,12 @@ class ExploreContentWidget extends StatelessWidget {
                             Padding(
                               padding: EdgeInsets.only(left: realW(22)),
                             ),
-                            buildListItem(0, "Authentic\nrestaurant"),
-                            buildListItem(1, "Famous\nmonuments"),
-                            buildListItem(2, "Weekend\ngetaways"),
-                            buildListItem(3, "Authentic\nrestaurant"),
-                            buildListItem(4, "Famous\nmonuments"),
-                            buildListItem(5, "Weekend\ngetaways"),
+                            buildListItem(0, "Galleface\nHotel"),
+                            buildListItem(1, "Galleface\nHotel"),
+                            buildListItem(2, "Galleface\nHotel"),
+                            buildListItem(3, "Galleface\nHotel"),
+                            buildListItem(4, "Galleface\nHotel"),
+                            buildListItem(5, "Galleface\nHotel"),
                           ],
                         ),
                       ))),
@@ -90,7 +90,7 @@ class ExploreContentWidget extends StatelessWidget {
                         children: <Widget>[
                           Padding(
                             padding: EdgeInsets.only(left: realW(22)),
-                            child: Text("EVENTS",
+                            child: Text("DETAILS",
                                 style:
                                     const TextStyle(color: Colors.white54, fontSize: 13, fontWeight: FontWeight.bold)),
                           ),
@@ -99,28 +99,28 @@ class ExploreContentWidget extends StatelessWidget {
                               Image.asset(
                                 "assets/dj.png",
                               ),
-                              Positioned(
-                                  bottom: realH(26),
-                                  left: realW(24),
-                                  child: Text(
-                                    "Marshmello Live in Concert",
-                                    style: TextStyle(color: Colors.white, fontSize: realW(16)),
-                                  ))
+                              // Positioned(
+                              //     bottom: realH(26),
+                              //     left: realW(24),
+                              //     child: Text(
+                              //       "Marshmello Live in Concert",
+                              //       style: TextStyle(color: Colors.white, fontSize: realW(16)),
+                              //     ))
                             ],
                           ),
-                          Transform.translate(
-                            offset: Offset(0, realH(30 - 30 * (currentExplorePercent - 0.75) * 4)),
-                            child: Row(
-                              children: <Widget>[
-                                Expanded(
-                                  child: Image.asset("assets/banner_4.png"),
-                                ),
-                                Expanded(
-                                  child: Image.asset("assets/banner_5.png"),
-                                ),
-                              ],
-                            ),
-                          )
+                          // Transform.translate(
+                          //   offset: Offset(0, realH(30 - 30 * (currentExplorePercent - 0.75) * 4)),
+                          //   child: Row(
+                          //     children: <Widget>[
+                          //       Expanded(
+                          //         child: Image.asset("assets/banner_4.png"),
+                          //       ),
+                          //       Expanded(
+                          //         child: Image.asset("assets/banner_5.png"),
+                          //       ),
+                          //     ],
+                          //   ),
+                          // )
                         ],
                       ),
                     ),
