@@ -1,7 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
+import 'configurations/graphQLConfiguration .dart';
 import 'home_page.dart';
 
-void main() => runApp(MyApp());
+GraphQLConfiguration graphQLConfiguration = GraphQLConfiguration();
+
+void main() => runApp(
+      GraphQLProvider(
+        client: graphQLConfiguration.client,
+        child: CacheProvider(child: MyApp()),
+      ),
+    );
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.

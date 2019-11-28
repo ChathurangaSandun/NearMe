@@ -7,8 +7,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:nearme/helper/graphQL_api_client_helper.dart';
+import 'package:nearme/helper/graphql_query_helper.dart';
+import 'package:nearme/models/person.dart';
 import 'components/components.dart';
+import 'configurations/graphQLConfiguration .dart';
 import 'helper/ui_helper.dart';
+import "package:graphql_flutter/graphql_flutter.dart";
 
 class GoogleMapPage extends StatefulWidget {
   GoogleMapPage();
@@ -29,6 +34,9 @@ class _GoogleMapState extends State<GoogleMapPage>
   Animation<double> animationW;
   Animation<double> animationR;
   bool isCreatedMap = false;
+  GraphQLConfiguration graphQLConfiguration = GraphQLConfiguration();
+  GraphQLApiClient _graphQLClient = GraphQLApiClient();
+  GraphQlQueryHelper _graphQLQeuryHelper = GraphQlQueryHelper();
 
   static LatLng _initialPosition;
   final Set<Marker> _markers = {};
@@ -188,7 +196,7 @@ class _GoogleMapState extends State<GoogleMapPage>
                 isCreatedMap = true;
                 changeGoogleMapStyle();
               },
-            ),            
+            ),
             //blur
             offsetSearch != 0
                 ? BackdropFilter(
@@ -206,11 +214,11 @@ class _GoogleMapState extends State<GoogleMapPage>
                     padding: const EdgeInsets.all(0),
                   ),
             //explore content
-           
+
             //recent search
             RecentSearchWidget(
               currentSearchPercent: currentSearchPercent,
-            ),            
+            ),
             //search
             SearchWidget(
               currentSearchPercent: currentSearchPercent,
@@ -224,7 +232,7 @@ class _GoogleMapState extends State<GoogleMapPage>
             SearchBackWidget(
               currentSearchPercent: currentSearchPercent,
               animateSearch: animateSearch,
-            ),           
+            ),
             //directions button
             MapButton(
               currentSearchPercent: currentSearchPercent,
@@ -239,12 +247,13 @@ class _GoogleMapState extends State<GoogleMapPage>
                 Color(0xFF59C2FF),
                 Color(0xFF1270E3),
               ]),
+              doAction: _getDirection,
             ),
             //my_location button
             MapButton(
               currentSearchPercent: currentSearchPercent,
               currentExplorePercent: currentExplorePercent,
-              bottom: 280 ,
+              bottom: 280,
               offsetX: -68,
               width: 68,
               height: 71,
@@ -365,5 +374,17 @@ class _GoogleMapState extends State<GoogleMapPage>
       zoom: 12,
       tilt: 50.0,
     )));
+  }
+
+  _getDirection() async {
+    var result = await _graphQLClient.execute(_graphQLQeuryHelper.getNearestPersons(10, 10, 1));
+    List<Person> persons = List<Person>();
+    if (!result.hasErrors) {
+      for (var i = 0; i < result.data["nearestLocations"].length; i++) {
+        persons.add(Person.fromJSON(result.data["nearestLocations"][i]));
+      }
+    }
+
+    print(persons.length);
   }
 }
