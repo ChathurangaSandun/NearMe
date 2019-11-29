@@ -42,7 +42,7 @@ class MapButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      bottom: realH(bottom),
+      top: realH(bottom),
       left: !isRight
           ? realW(offsetX * (currentExplorePercent + currentSearchPercent))
           : null,
@@ -77,7 +77,8 @@ class MapButton extends StatelessWidget {
                   BoxShadow(
                       color: Color.fromRGBO(0, 0, 0, 0.3),
                       blurRadius: realW(36)),
-                ]),
+                ]
+                ),
           ),
         ),
       ),

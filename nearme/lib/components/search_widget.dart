@@ -27,7 +27,7 @@ class SearchWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      top: realH(53),
+      top: realH(50),
       right: realW((68.0 - 320) - (68.0 * currentExplorePercent) + (347 - 68.0) * currentSearchPercent),
       child: GestureDetector(
         onTap: () {

@@ -11,9 +11,9 @@ import 'package:nearme/helper/graphQL_api_client_helper.dart';
 import 'package:nearme/helper/graphql_query_helper.dart';
 import 'package:nearme/models/person.dart';
 import 'components/components.dart';
+import 'components/pointlocation_listview.dart';
 import 'configurations/graphQLConfiguration .dart';
 import 'helper/ui_helper.dart';
-import "package:graphql_flutter/graphql_flutter.dart";
 
 class GoogleMapPage extends StatefulWidget {
   GoogleMapPage();
@@ -37,6 +37,7 @@ class _GoogleMapState extends State<GoogleMapPage>
   GraphQLConfiguration graphQLConfiguration = GraphQLConfiguration();
   GraphQLApiClient _graphQLClient = GraphQLApiClient();
   GraphQlQueryHelper _graphQLQeuryHelper = GraphQlQueryHelper();
+  List<Person> nearestPointLocations = List<Person>();
 
   static LatLng _initialPosition;
   final Set<Marker> _markers = {};
@@ -197,6 +198,10 @@ class _GoogleMapState extends State<GoogleMapPage>
                 changeGoogleMapStyle();
               },
             ),
+            PointLocationList(
+              nearestLocations: nearestPointLocations,
+              changeGoogleMapMarkercamera: _changeGoogleMapMakerCamera,
+            ),
             //blur
             offsetSearch != 0
                 ? BackdropFilter(
@@ -237,7 +242,7 @@ class _GoogleMapState extends State<GoogleMapPage>
             MapButton(
               currentSearchPercent: currentSearchPercent,
               currentExplorePercent: currentExplorePercent,
-              bottom: 175,
+              bottom: realH(150),
               offsetX: -68,
               width: 68,
               height: 71,
@@ -247,13 +252,13 @@ class _GoogleMapState extends State<GoogleMapPage>
                 Color(0xFF59C2FF),
                 Color(0xFF1270E3),
               ]),
-              doAction: _getDirection,
+              doAction: () => _getDirection(56, 45, 1),
             ),
             //my_location button
             MapButton(
               currentSearchPercent: currentSearchPercent,
               currentExplorePercent: currentExplorePercent,
-              bottom: 280,
+              bottom: realH(250),
               offsetX: -68,
               width: 68,
               height: 71,
@@ -261,9 +266,10 @@ class _GoogleMapState extends State<GoogleMapPage>
               iconColor: Colors.blue,
               doAction: _getCurrentMyLocation,
             ),
+
             //menu button
             Positioned(
-              top: realH(53),
+              top: realH(50),
               left: realW(-71 * (currentExplorePercent + currentSearchPercent)),
               child: GestureDetector(
                 onTap: () {
@@ -296,8 +302,9 @@ class _GoogleMapState extends State<GoogleMapPage>
             ),
             //menu
             MenuWidget(
-                currentMenuPercent: currentMenuPercent,
-                animateMenu: animateMenu),
+              currentMenuPercent: currentMenuPercent,
+              animateMenu: animateMenu,
+            ),
           ],
         ),
       ),
@@ -363,28 +370,55 @@ class _GoogleMapState extends State<GoogleMapPage>
         markerId: MarkerId("curr_loc"),
         position: LatLng(_initialPosition.latitude, _initialPosition.longitude),
         infoWindow: InfoWindow(title: 'Your Location'),
-        icon: _myIcon,
+        icon: BitmapDescriptor.defaultMarker,
       );
       _markers.add(marker);
     });
 
+    await _changeGoogleMapMakerCamera(
+        _initialPosition.latitude, _initialPosition.longitude, 13.0);
+
+    await _getDirection(
+        _initialPosition.latitude, _initialPosition.longitude, 1);
+  }
+
+  _changeGoogleMapMakerCamera(double latitude, double longtitude, double zoom) async {
     final GoogleMapController controller = await _mapController.future;
     controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-      target: LatLng(_initialPosition.latitude, _initialPosition.longitude),
-      zoom: 12,
-      tilt: 50.0,
+      target: LatLng(_initialPosition.latitude, longtitude),
+      zoom: zoom,
+      //tilt: 50.0,
     )));
   }
 
-  _getDirection() async {
-    var result = await _graphQLClient.execute(_graphQLQeuryHelper.getNearestPersons(10, 10, 1));
+  _getDirection(double latitude, double longtitude, int organizationId) async {
+    var result = await _graphQLClient.execute(_graphQLQeuryHelper
+        .getNearestPersons(latitude, longtitude, organizationId));
     List<Person> persons = List<Person>();
+    List<Marker> nearestMakers = List<Marker>();
     if (!result.hasErrors) {
       for (var i = 0; i < result.data["nearestLocations"].length; i++) {
-        persons.add(Person.fromJSON(result.data["nearestLocations"][i]));
-      }
-    }
+        final person = Person.fromJSON(result.data["nearestLocations"][i]);
+        persons.add(person);
 
-    print(persons.length);
+        // create marks
+        final marker = Marker(
+          markerId: MarkerId(person.id.toString()),
+          position: LatLng(
+              person.pointLocation.latitude, person.pointLocation.longtitude),
+          infoWindow: InfoWindow(
+            title: person.name,
+            snippet: person.mobile,
+          ),
+          icon: BitmapDescriptor.defaultMarker,
+        );
+        nearestMakers.add(marker);
+      }
+
+      setState(() {
+        nearestPointLocations = persons;       
+        _markers.addAll(nearestMakers);
+      });
+    }
   }
 }
