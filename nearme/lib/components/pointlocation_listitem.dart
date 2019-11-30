@@ -19,9 +19,9 @@ class PointLocationListItem extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             Image.asset(
-              "assets/imagetest.jpg",
+              "assets/avatar.png",
               width: MediaQuery.of(context).size.width * 0.8,
-              height: (screenHeight * 0.30) * 2 / 5,
+              height: (screenHeight * 0.30) * 2 / 7,
             ),
             Container(
               padding: EdgeInsets.all(10),
