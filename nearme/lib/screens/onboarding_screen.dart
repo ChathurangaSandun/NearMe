@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../helper/ui_helper.dart';
 import 'dart:async';
+import 'package:device_info/device_info.dart';
 
 class OnboardingScreen extends StatefulWidget {
   //DropDown() : super()
@@ -188,7 +191,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                     hint: Text(
                                       'Choose your compnay',
                                       style: TextStyle(
-                                        color: Colors.white,                                        
+                                        color: Colors.white,
                                       ),
                                     ),
                                     value: _selectedCompany == ''
@@ -229,6 +232,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           alignment: FractionalOffset.bottomRight,
                           child: FlatButton(
                             onPressed: () {
+                              
                               _pageController.nextPage(
                                 duration: Duration(milliseconds: 500),
                                 curve: Curves.ease,
@@ -268,13 +272,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               width: double.infinity,
               color: Colors.white,
               child: GestureDetector(
-                onTap: () {
-                  if(_selectedCompany != null ){
+                onTap: () async {
+                  if (_selectedCompany != null) {
+                    await _getdeviceInfo();
                     Navigator.of(context).pushReplacementNamed("/home");
-                  }else{
+                  } else {
                     _showDialog();
                   }
-
                 },
                 child: Center(
                   child: Padding(
@@ -295,7 +299,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
-
   void _showDialog() {
     // flutter defined function
     showDialog(
@@ -304,7 +307,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         // return object of type Dialog
         return AlertDialog(
           title: new Text("You are not selecting a company."),
-          content: new Text("Please go ahead please select your company and press Get Start.."),
+          content: new Text(
+              "Please go ahead please select your company and press Get Start.."),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
             new FlatButton(
@@ -319,7 +323,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
-
+  void _getdeviceInfo() async {
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    if (Platform.isAndroid) {
+      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+      print(androidInfo);
+    } else if (Platform.isIOS) {
+      IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+    }
+    
+  }
 }
 
 class Company {
