@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'configurations/graphQLConfiguration .dart';
 import 'home_page.dart';
+import 'screens/onboarding_screen.dart';
+import 'configurations/application_routes.dart';
 
 GraphQLConfiguration graphQLConfiguration = GraphQLConfiguration();
+
 
 void main() => runApp(
       GraphQLProvider(
@@ -16,6 +19,17 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    OnboardingScreen onboardingScreen = new OnboardingScreen();
+    GoogleMapPage googleMapPage = new GoogleMapPage();
+    String _initRoute = '/onboard';
+    Widget _defaultScreen = onboardingScreen;
+    bool _isOnboarded = false;
+    if(_isOnboarded){
+      _initRoute = '/home';
+      _defaultScreen = googleMapPage;
+    }
+
+
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
@@ -30,7 +44,12 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primaryColor: Color(0xFF707070),
       ),
-      home: GoogleMapPage(),
+      home: _defaultScreen,
+      initialRoute: _initRoute,
+      routes: ApplicationRoutes.routes,
     );
   }
+
+
+
 }

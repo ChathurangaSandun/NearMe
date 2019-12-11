@@ -63,6 +63,9 @@ flutter:
      - light.json
      - icons8-user-location.png
      - imagetest.jpg
+     - onboarding0.png
+     - onboarding1.png
+     - onboarding2.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:
