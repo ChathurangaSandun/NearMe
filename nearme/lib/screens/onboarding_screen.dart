@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../helper/ui_helper.dart';
+import 'dart:async';
 
 class OnboardingScreen extends StatefulWidget {
+  //DropDown() : super()
+
   @override
   _OnboardingScreenState createState() => _OnboardingScreenState();
 }
@@ -12,6 +15,37 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final int _numPages = 3;
   final PageController _pageController = PageController(initialPage: 0);
   int _currentPage = 0;
+
+  List<Company> _companies = Company.getCompanies();
+  List<DropdownMenuItem<Company>> _dropdownMenuItems;
+  Company _selectedCompany;
+
+  @override
+  void initState() {
+    _dropdownMenuItems = buildDropdownMenuItems(_companies);
+    _selectedCompany = null; // _dropdownMenuItems[0].value;
+    super.initState();
+  }
+
+  List<DropdownMenuItem<Company>> buildDropdownMenuItems(List companies) {
+    List<DropdownMenuItem<Company>> items = List();
+    for (Company company in companies) {
+      items.add(
+        DropdownMenuItem(
+          value: company,
+          child: Text(company.name),
+        ),
+      );
+    }
+    return items;
+  }
+
+  onChangeDropdownItem(Company selectedCompany) {
+    setState(() {
+      _selectedCompany = selectedCompany;
+    });
+    print(_selectedCompany.name);
+  }
 
   List<Widget> _buildPageIndicator() {
     List<Widget> list = [];
@@ -57,7 +91,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             padding: EdgeInsets.symmetric(vertical: 40.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[               
+              children: <Widget>[
                 Container(
                   height: 600.0,
                   child: PageView(
@@ -139,14 +173,46 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             ),
                             SizedBox(height: 30.0),
                             Text(
-                              'Get a new experience\nof imagination',
+                              'Select your company and get nearest locations!',
                               style: kTitleStyle,
                             ),
-                            SizedBox(height: 15.0),
-                            Text(
-                              'Lorem ipsum dolor sit amet, consect adipiscing elit, sed do eiusmod tempor incididunt ut labore et.',
-                              style: kSubtitleStyle,
+                            SizedBox(height: 30.0),
+                            Center(
+                              child: Theme(
+                                data: Theme.of(context).copyWith(
+                                  canvasColor: Color(0xFF5B16D0),
+                                ),
+                                child: Container(
+                                  width: 300,
+                                  child: DropdownButton(
+                                    hint: Text(
+                                      'Choose your compnay',
+                                      style: TextStyle(
+                                        color: Colors.white,                                        
+                                      ),
+                                    ),
+                                    value: _selectedCompany == ''
+                                        ? null
+                                        : _selectedCompany,
+                                    items: _dropdownMenuItems
+                                        .map((item) =>
+                                            DropdownMenuItem<Company>(
+                                              child: Container(
+                                                child: Text(
+                                                  item.value.name,
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                              ),
+                                              value: item.value,
+                                            ))
+                                        .toList(),
+                                    onChanged: onChangeDropdownItem,
+                                    style: kSubtitleStyle,
+                                  ),
+                                ),
+                              ),
                             ),
+                            SizedBox(height: 15.0),
                           ],
                         ),
                       ),
@@ -203,7 +269,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               color: Colors.white,
               child: GestureDetector(
                 onTap: () {
-                  Navigator.of(context).pushReplacementNamed("/home");
+                  if(_selectedCompany != null ){
+                    Navigator.of(context).pushReplacementNamed("/home");
+                  }else{
+                    _showDialog();
+                  }
+
                 },
                 child: Center(
                   child: Padding(
@@ -222,5 +293,45 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             )
           : Text(''),
     );
+  }
+
+
+  void _showDialog() {
+    // flutter defined function
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("You are not selecting a company."),
+          content: new Text("Please go ahead please select your company and press Get Start.."),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Close"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
+}
+
+class Company {
+  int id;
+  String name;
+
+  Company(this.id, this.name);
+
+  static List<Company> getCompanies() {
+    return <Company>[
+      Company(1, 'Tiqri'),
+      Company(2, 'Nalanda OBA'),
+    ];
   }
 }

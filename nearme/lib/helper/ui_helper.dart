@@ -30,7 +30,7 @@ final kTitleStyle = TextStyle(
 
 final kSubtitleStyle = TextStyle(
   color: Colors.white,
-  fontSize: 18.0,
+  fontSize: 20.0,
   height: 1.2,
 );
 
