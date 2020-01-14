@@ -38,7 +38,16 @@ class _GoogleMapState extends State<GoogleMapPage>
   GraphQLConfiguration graphQLConfiguration = GraphQLConfiguration();
   GraphQLApiClient _graphQLClient = GraphQLApiClient();
   GraphQlQueryHelper _graphQLQeuryHelper = GraphQlQueryHelper();
-  List<Person> nearestPointLocations = List<Person>();
+  List<Person> nearestPointLocations = [
+    Person(),
+    Person(),
+    Person(),
+    Person(),
+    Person()
+  ];
+  bool isLoadingNearestLocations = false;
+  Marker selectedLocationMarker = new Marker();
+
   static int selectedrOranizationId = 5;
 
   static LatLng _initialPosition;
@@ -201,9 +210,9 @@ class _GoogleMapState extends State<GoogleMapPage>
               },
             ),
             PointLocationList(
-              nearestLocations: nearestPointLocations,
-              changeGoogleMapMarkercamera: _changeGoogleMapMakerCamera,
-            ),
+                nearestLocations: nearestPointLocations,
+                changeGoogleMapMarkercamera: _changeGoogleMapMakerCamera,
+                isLoadingNearestLocations: isLoadingNearestLocations),
             //blur
             offsetSearch != 0
                 ? BackdropFilter(
@@ -364,8 +373,9 @@ class _GoogleMapState extends State<GoogleMapPage>
         print('${placemark[0].name}');
         print(position.latitude.toString());
         print(position.longitude.toString());
-        //_getCurrentMyLocation();
       });
+
+      await _getCurrentMyLocation();
     }
   }
 
@@ -380,15 +390,12 @@ class _GoogleMapState extends State<GoogleMapPage>
   }
 
   void _getCurrentMyLocation() async {
-    setState(() {
-      final marker = Marker(
-        markerId: MarkerId("curr_loc"),
-        position: LatLng(_initialPosition.latitude, _initialPosition.longitude),
-        infoWindow: InfoWindow(title: 'Your Location'),
-        icon: BitmapDescriptor.defaultMarker,
-      );
-      _markers.add(marker);
-    });
+    this.selectedLocationMarker = Marker(
+      markerId: MarkerId("curr_loc"),
+      position: LatLng(_initialPosition.latitude, _initialPosition.longitude),
+      infoWindow: InfoWindow(title: 'Your Location'),
+      icon: BitmapDescriptor.defaultMarker,
+    );
 
     await _changeGoogleMapMakerCamera(
         _initialPosition.latitude, _initialPosition.longitude, 13.0);
@@ -409,17 +416,34 @@ class _GoogleMapState extends State<GoogleMapPage>
 
   void _getDirectionFromSelectedLocation(
       double latitude, double longtitude) async {
+    this.selectedLocationMarker = Marker(
+      markerId: MarkerId('SELECTED_LOCATION_MERKER'),
+      position: LatLng(latitude, longtitude),
+      icon: BitmapDescriptor.defaultMarker,
+    );
     await this._getDirection(latitude, longtitude, selectedrOranizationId);
+    await _changeGoogleMapMakerCamera(latitude, longtitude, 13.0);
   }
 
   void _getDirection(
       double latitude, double longtitude, int organizationId) async {
+    setState(() {
+      this.isLoadingNearestLocations = false;
+      _markers.clear();
+      _markers.add(this.selectedLocationMarker);
+      nearestPointLocations = [
+        Person(),
+        Person(),
+        Person(),
+        Person(),
+        Person(),
+      ];
+    });
     var result = await _graphQLClient.execute(_graphQLQeuryHelper
         .getNearestPersons(latitude, longtitude, organizationId));
     List<Person> persons = List<Person>();
     List<Marker> nearestMakers = List<Marker>();
-    this.nearestPointLocations = [];
-    
+
     if (!result.hasException) {
       for (var i = 0; i < result.data["nearestLocations"].length; i++) {
         final person = Person.fromJSON(result.data["nearestLocations"][i]);
@@ -440,7 +464,7 @@ class _GoogleMapState extends State<GoogleMapPage>
       }
 
       setState(() {
-        _markers.clear();
+        this.isLoadingNearestLocations = true;
         nearestPointLocations = persons;
         _markers.addAll(nearestMakers);
       });

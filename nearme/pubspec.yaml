@@ -30,7 +30,7 @@ dependencies:
   device_info: ^0.4.1
   shared_preferences: ^0.5.4+8
   flutter_google_places: ^0.2.3
-  
+  pk_skeleton: ^0.0.2
  
 dev_dependencies:
   flutter_test:
