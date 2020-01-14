@@ -5,15 +5,19 @@ import 'home_page.dart';
 import 'screens/onboarding_screen.dart';
 import 'configurations/application_routes.dart';
 
-GraphQLConfiguration graphQLConfiguration = GraphQLConfiguration();
+
+GraphQLConfiguration graphQLConfig = GraphQLConfiguration();
 
 
-void main() => runApp(
+void main() { 
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(
       GraphQLProvider(
-        client: graphQLConfiguration.client,
+        client: graphQLConfig.client,
         child: CacheProvider(child: MyApp()),
       ),
     );
+}
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.

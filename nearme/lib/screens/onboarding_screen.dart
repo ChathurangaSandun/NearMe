@@ -1,11 +1,16 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 import '../helper/ui_helper.dart';
 import 'dart:async';
 import 'package:device_info/device_info.dart';
+import '../models/device_informamtion.dart';
 
 class OnboardingScreen extends StatefulWidget {
   //DropDown() : super()
@@ -25,9 +30,19 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   void initState() {
+    _getOrgnization();
     _dropdownMenuItems = buildDropdownMenuItems(_companies);
     _selectedCompany = null; // _dropdownMenuItems[0].value;
     super.initState();
+  }
+  
+  void _getOrgnization() async{
+      SharedPreferences prefs = await SharedPreferences.getInstance();      
+      var org = await prefs.getInt('organization');
+      print(org);
+      if(org != null){
+        Navigator.of(context).pushReplacementNamed("/home");
+      }
   }
 
   List<DropdownMenuItem<Company>> buildDropdownMenuItems(List companies) {
@@ -232,7 +247,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           alignment: FractionalOffset.bottomRight,
                           child: FlatButton(
                             onPressed: () {
-                              
                               _pageController.nextPage(
                                 duration: Duration(milliseconds: 500),
                                 curve: Curves.ease,
@@ -274,8 +288,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               child: GestureDetector(
                 onTap: () async {
                   if (_selectedCompany != null) {
-                    await _getdeviceInfo();
-                    Navigator.of(context).pushReplacementNamed("/home");
+                    var info = await _saveDeviceInfo(_selectedCompany);
+                    
                   } else {
                     _showDialog();
                   }
@@ -323,15 +337,28 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
-  void _getdeviceInfo() async {
+  void _saveDeviceInfo(Company selectedCompany) async {
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    AndroidDeviceInfo androidInfo = null;
     if (Platform.isAndroid) {
-      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+      androidInfo = await deviceInfo.androidInfo;
       print(androidInfo);
     } else if (Platform.isIOS) {
       IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
     }
-    
+
+    var info = DeviceInfromation(osModel: "Android", uuid: androidInfo.androidId, model: androidInfo.model, osVersion:androidInfo.version.release);
+    var json =  '{	"OsModel": "'+info.osModel+'",	"Model": "'+info.model+'",	"Uuid": "'+info.uuid+'",	"Osversion": "'+info.osVersion+'"}';
+    final response = await http.post('https://locationfinderapi20191127114428.azurewebsites.net/api/Devices',
+        headers: {HttpHeaders.contentTypeHeader: 'application/json'},
+        body: json
+        );
+
+    if(response.statusCode == 200){
+      SharedPreferences prefs = await SharedPreferences.getInstance();      
+      await prefs.setInt('organization', selectedCompany.id);
+      Navigator.of(context).pushReplacementNamed("/home");
+    }
   }
 }
 
@@ -343,7 +370,7 @@ class Company {
 
   static List<Company> getCompanies() {
     return <Company>[
-      Company(1, 'Tiqri'),
+      Company(5, 'Tiqri'),
       Company(2, 'Nalanda OBA'),
     ];
   }
