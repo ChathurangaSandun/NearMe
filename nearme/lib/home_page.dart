@@ -48,7 +48,7 @@ class _GoogleMapState extends State<GoogleMapPage>
   bool isLoadingNearestLocations = false;
   Marker selectedLocationMarker = new Marker();
 
-  static int selectedrOranizationId = 5;
+  static int selectedOranizationId = 0;
 
   static LatLng _initialPosition;
   final Set<Marker> _markers = {};
@@ -252,26 +252,26 @@ class _GoogleMapState extends State<GoogleMapPage>
               animateSearch: animateSearch,
             ),
             //directions button
-            MapButton(
-              currentSearchPercent: currentSearchPercent,
-              currentExplorePercent: currentExplorePercent,
-              bottom: realH(150),
-              offsetX: -68,
-              width: 68,
-              height: 71,
-              icon: Icons.directions,
-              iconColor: Colors.white,
-              gradient: const LinearGradient(colors: [
-                Color(0xFF59C2FF),
-                Color(0xFF1270E3),
-              ]),
-              doAction: () => _getDirection(56, 45, 1),
-            ),
+            // MapButton(
+            //   currentSearchPercent: currentSearchPercent,
+            //   currentExplorePercent: currentExplorePercent,
+            //   bottom: realH(150),
+            //   offsetX: -68,
+            //   width: 68,
+            //   height: 71,
+            //   icon: Icons.directions,
+            //   iconColor: Colors.white,
+            //   gradient: const LinearGradient(colors: [
+            //     Color(0xFF59C2FF),
+            //     Color(0xFF1270E3),
+            //   ]),
+            //   doAction: () => _getDirection(56, 45, 1),
+            // ),
             //my_location button
             MapButton(
               currentSearchPercent: currentSearchPercent,
               currentExplorePercent: currentExplorePercent,
-              bottom: realH(250),
+              bottom: realH(150),
               offsetX: -68,
               width: 68,
               height: 71,
@@ -329,8 +329,10 @@ class _GoogleMapState extends State<GoogleMapPage>
     super.initState();
 
     SystemChrome.setEnabledSystemUIOverlays([]);
-    _getOrgnization();
-    _getUserLocation();
+    _getOrgnization().then((result){
+      _getUserLocation();
+    });
+    
 
     BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(128, 128)),
             'assets/icons8-user-location.png')
@@ -379,29 +381,33 @@ class _GoogleMapState extends State<GoogleMapPage>
     }
   }
 
-  void _getOrgnization() async {
+  Future _getOrgnization() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var org = await prefs.getInt('organization');
-    selectedrOranizationId = org;
+    var org = prefs.getInt('organization');    
+    setState(() {
+      selectedOranizationId = org;
+      print(selectedOranizationId);
+    });
   }
 
   _onCameraMove(CameraPosition position) {
     _lastMapPosition = position.target;
   }
 
-  void _getCurrentMyLocation() async {
+  Future _getCurrentMyLocation() async {
     this.selectedLocationMarker = Marker(
       markerId: MarkerId("curr_loc"),
       position: LatLng(_initialPosition.latitude, _initialPosition.longitude),
       infoWindow: InfoWindow(title: 'Your Location'),
-      icon: BitmapDescriptor.defaultMarker,
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
     );
 
+    print(selectedOranizationId);
     await _changeGoogleMapMakerCamera(
         _initialPosition.latitude, _initialPosition.longitude, 13.0);
 
     await _getDirection(_initialPosition.latitude, _initialPosition.longitude,
-        selectedrOranizationId);
+        selectedOranizationId);
   }
 
   _changeGoogleMapMakerCamera(
@@ -419,13 +425,15 @@ class _GoogleMapState extends State<GoogleMapPage>
     this.selectedLocationMarker = Marker(
       markerId: MarkerId('SELECTED_LOCATION_MERKER'),
       position: LatLng(latitude, longtitude),
-      icon: BitmapDescriptor.defaultMarker,
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
     );
-    await this._getDirection(latitude, longtitude, selectedrOranizationId);
+
+    print(selectedOranizationId);
+    await this._getDirection(latitude, longtitude, selectedOranizationId);
     await _changeGoogleMapMakerCamera(latitude, longtitude, 13.0);
   }
 
-  void _getDirection(
+  Future _getDirection(
       double latitude, double longtitude, int organizationId) async {
     setState(() {
       this.isLoadingNearestLocations = false;
