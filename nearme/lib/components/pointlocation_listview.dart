@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:nearme/components/pointlocation_listitem.dart';
 import 'package:nearme/models/person.dart';
+import 'package:pk_skeleton/pk_skeleton.dart';
 
 class PointLocationList extends StatelessWidget {
   List<Person> nearestLocations = List<Person>();
   final Function changeGoogleMapMarkercamera;
+  bool isLoadingNearestLocations = false;
 
-  PointLocationList({this.nearestLocations, this.changeGoogleMapMarkercamera});
+  PointLocationList({this.nearestLocations, this.changeGoogleMapMarkercamera, this.isLoadingNearestLocations});
 
   @override
   Widget build(BuildContext context) {
@@ -26,16 +28,25 @@ class PointLocationList extends StatelessWidget {
               itemBuilder: (context, index) {
                 return GestureDetector(
                   onTap: () {
-                    changeGoogleMapMarkercamera(nearestLocations[index].pointLocation.latitude,
-                        nearestLocations[index].pointLocation.longtitude, 15.0);
+                    if (isLoadingNearestLocations) {
+                      changeGoogleMapMarkercamera(
+                          nearestLocations[index].pointLocation.latitude,
+                          nearestLocations[index].pointLocation.longtitude,
+                          15.0);
+                    }
                   },
                   child: Container(
                     width: MediaQuery.of(context).size.width * 0.8,
                     child: Container(
-                      child: PointLocationListItem(
-                          person: nearestLocations[index],
-                          changeGoogleMapMarkercamera:
-                              changeGoogleMapMarkercamera),
+                      child: !isLoadingNearestLocations
+                          ? PKCardSkeleton(
+                              isCircularImage: true,
+                              isBottomLinesActive: true,
+                            )
+                          : PointLocationListItem(
+                              person: nearestLocations[index],
+                              changeGoogleMapMarkercamera:
+                                  changeGoogleMapMarkercamera),
                     ),
                   ),
                 );

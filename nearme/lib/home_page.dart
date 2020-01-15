@@ -14,6 +14,7 @@ import 'components/components.dart';
 import 'components/pointlocation_listview.dart';
 import 'configurations/graphQLConfiguration .dart';
 import 'helper/ui_helper.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class GoogleMapPage extends StatefulWidget {
   GoogleMapPage();
@@ -37,7 +38,17 @@ class _GoogleMapState extends State<GoogleMapPage>
   GraphQLConfiguration graphQLConfiguration = GraphQLConfiguration();
   GraphQLApiClient _graphQLClient = GraphQLApiClient();
   GraphQlQueryHelper _graphQLQeuryHelper = GraphQlQueryHelper();
-  List<Person> nearestPointLocations = List<Person>();
+  List<Person> nearestPointLocations = [
+    Person(),
+    Person(),
+    Person(),
+    Person(),
+    Person()
+  ];
+  bool isLoadingNearestLocations = false;
+  Marker selectedLocationMarker = new Marker();
+
+  static int selectedOranizationId = 0;
 
   static LatLng _initialPosition;
   final Set<Marker> _markers = {};
@@ -140,7 +151,7 @@ class _GoogleMapState extends State<GoogleMapPage>
           })
           ..addStatusListener((status) {
             if (status == AnimationStatus.completed) {
-              isSearchOpen = open;
+              isSearchOpen = false;
             }
           });
     animationControllerSearch.forward();
@@ -199,9 +210,9 @@ class _GoogleMapState extends State<GoogleMapPage>
               },
             ),
             PointLocationList(
-              nearestLocations: nearestPointLocations,
-              changeGoogleMapMarkercamera: _changeGoogleMapMakerCamera,
-            ),
+                nearestLocations: nearestPointLocations,
+                changeGoogleMapMarkercamera: _changeGoogleMapMakerCamera,
+                isLoadingNearestLocations: isLoadingNearestLocations),
             //blur
             offsetSearch != 0
                 ? BackdropFilter(
@@ -232,6 +243,8 @@ class _GoogleMapState extends State<GoogleMapPage>
               animateSearch: animateSearch,
               onHorizontalDragUpdate: onSearchHorizontalDragUpdate,
               onPanDown: () => animationControllerSearch?.stop(),
+              getDirectionFromSelectedLocation:
+                  _getDirectionFromSelectedLocation,
             ),
             //search back
             SearchBackWidget(
@@ -239,26 +252,26 @@ class _GoogleMapState extends State<GoogleMapPage>
               animateSearch: animateSearch,
             ),
             //directions button
-            MapButton(
-              currentSearchPercent: currentSearchPercent,
-              currentExplorePercent: currentExplorePercent,
-              bottom: realH(150),
-              offsetX: -68,
-              width: 68,
-              height: 71,
-              icon: Icons.directions,
-              iconColor: Colors.white,
-              gradient: const LinearGradient(colors: [
-                Color(0xFF59C2FF),
-                Color(0xFF1270E3),
-              ]),
-              doAction: () => _getDirection(56, 45, 1),
-            ),
+            // MapButton(
+            //   currentSearchPercent: currentSearchPercent,
+            //   currentExplorePercent: currentExplorePercent,
+            //   bottom: realH(150),
+            //   offsetX: -68,
+            //   width: 68,
+            //   height: 71,
+            //   icon: Icons.directions,
+            //   iconColor: Colors.white,
+            //   gradient: const LinearGradient(colors: [
+            //     Color(0xFF59C2FF),
+            //     Color(0xFF1270E3),
+            //   ]),
+            //   doAction: () => _getDirection(56, 45, 1),
+            // ),
             //my_location button
             MapButton(
               currentSearchPercent: currentSearchPercent,
               currentExplorePercent: currentExplorePercent,
-              bottom: realH(250),
+              bottom: realH(150),
               offsetX: -68,
               width: 68,
               height: 71,
@@ -314,8 +327,12 @@ class _GoogleMapState extends State<GoogleMapPage>
   @override
   void initState() {
     super.initState();
+
     SystemChrome.setEnabledSystemUIOverlays([]);
-    _getUserLocation();
+    _getOrgnization().then((result){
+      _getUserLocation();
+    });
+    
 
     BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(128, 128)),
             'assets/icons8-user-location.png')
@@ -333,7 +350,7 @@ class _GoogleMapState extends State<GoogleMapPage>
   }
 
   void changeGoogleMapStyle() async {
-    getJsonFile("assets/light.json").then(setMapStyle);
+    await getJsonFile("assets/light.json").then(setMapStyle);
   }
 
   Future<String> getJsonFile(String path) async {
@@ -351,12 +368,25 @@ class _GoogleMapState extends State<GoogleMapPage>
         .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
     List<Placemark> placemark = await Geolocator()
         .placemarkFromCoordinates(position.latitude, position.longitude);
+
+    if (this.mounted) {
+      setState(() {
+        _initialPosition = LatLng(position.latitude, position.longitude);
+        print('${placemark[0].name}');
+        print(position.latitude.toString());
+        print(position.longitude.toString());
+      });
+
+      await _getCurrentMyLocation();
+    }
+  }
+
+  Future _getOrgnization() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var org = prefs.getInt('organization');    
     setState(() {
-      _initialPosition = LatLng(position.latitude, position.longitude);
-      print('${placemark[0].name}');
-      print(position.latitude.toString());
-      print(position.longitude.toString());
-      //_getCurrentMyLocation();
+      selectedOranizationId = org;
+      print(selectedOranizationId);
     });
   }
 
@@ -364,39 +394,65 @@ class _GoogleMapState extends State<GoogleMapPage>
     _lastMapPosition = position.target;
   }
 
-  void _getCurrentMyLocation() async {
-    setState(() {
-      final marker = Marker(
-        markerId: MarkerId("curr_loc"),
-        position: LatLng(_initialPosition.latitude, _initialPosition.longitude),
-        infoWindow: InfoWindow(title: 'Your Location'),
-        icon: BitmapDescriptor.defaultMarker,
-      );
-      _markers.add(marker);
-    });
+  Future _getCurrentMyLocation() async {
+    this.selectedLocationMarker = Marker(
+      markerId: MarkerId("curr_loc"),
+      position: LatLng(_initialPosition.latitude, _initialPosition.longitude),
+      infoWindow: InfoWindow(title: 'Your Location'),
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
+    );
 
+    print(selectedOranizationId);
     await _changeGoogleMapMakerCamera(
         _initialPosition.latitude, _initialPosition.longitude, 13.0);
 
-    await _getDirection(
-        _initialPosition.latitude, _initialPosition.longitude, 1);
+    await _getDirection(_initialPosition.latitude, _initialPosition.longitude,
+        selectedOranizationId);
   }
 
-  _changeGoogleMapMakerCamera(double latitude, double longtitude, double zoom) async {
+  _changeGoogleMapMakerCamera(
+      double latitude, double longtitude, double zoom) async {
     final GoogleMapController controller = await _mapController.future;
     controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-      target: LatLng(_initialPosition.latitude, longtitude),
+      target: LatLng(latitude, longtitude),
       zoom: zoom,
       //tilt: 50.0,
     )));
   }
 
-  _getDirection(double latitude, double longtitude, int organizationId) async {
+  void _getDirectionFromSelectedLocation(
+      double latitude, double longtitude) async {
+    this.selectedLocationMarker = Marker(
+      markerId: MarkerId('SELECTED_LOCATION_MERKER'),
+      position: LatLng(latitude, longtitude),
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
+    );
+
+    print(selectedOranizationId);
+    await this._getDirection(latitude, longtitude, selectedOranizationId);
+    await _changeGoogleMapMakerCamera(latitude, longtitude, 13.0);
+  }
+
+  Future _getDirection(
+      double latitude, double longtitude, int organizationId) async {
+    setState(() {
+      this.isLoadingNearestLocations = false;
+      _markers.clear();
+      _markers.add(this.selectedLocationMarker);
+      nearestPointLocations = [
+        Person(),
+        Person(),
+        Person(),
+        Person(),
+        Person(),
+      ];
+    });
     var result = await _graphQLClient.execute(_graphQLQeuryHelper
         .getNearestPersons(latitude, longtitude, organizationId));
     List<Person> persons = List<Person>();
     List<Marker> nearestMakers = List<Marker>();
-    if (!result.hasErrors) {
+
+    if (!result.hasException) {
       for (var i = 0; i < result.data["nearestLocations"].length; i++) {
         final person = Person.fromJSON(result.data["nearestLocations"][i]);
         persons.add(person);
@@ -416,7 +472,8 @@ class _GoogleMapState extends State<GoogleMapPage>
       }
 
       setState(() {
-        nearestPointLocations = persons;       
+        this.isLoadingNearestLocations = true;
+        nearestPointLocations = persons;
         _markers.addAll(nearestMakers);
       });
     }

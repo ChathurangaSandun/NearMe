@@ -10,10 +10,12 @@ class Person {
   Organization organization;
   PointLocation pointLocation;
 
+  Person.empty();
+
   Person({
-    @required this.id,
-    @required this.name,
-    @required this.address,
+    this.id,
+     this.name,
+     this.address,
     this.mobile,
     this.organization,
     this.pointLocation,

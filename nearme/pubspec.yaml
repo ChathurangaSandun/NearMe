@@ -25,9 +25,13 @@ dependencies:
   cupertino_icons: ^0.1.2
   geolocator: ^5.0.0  
   google_maps_flutter: ^0.5.21+12
-  graphql_flutter: ^2.0.0
-  http: ^0.12.0+2
-
+  graphql_flutter: 2.1.1-beta.4
+  http: ^0.12.0+2  
+  device_info: ^0.4.1
+  shared_preferences: ^0.5.4+8
+  flutter_google_places: ^0.2.3
+  pk_skeleton: ^0.0.2
+ 
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -63,6 +67,9 @@ flutter:
      - light.json
      - icons8-user-location.png
      - imagetest.jpg
+     - onboarding0.png
+     - onboarding1.png
+     - onboarding2.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:
