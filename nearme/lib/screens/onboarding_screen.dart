@@ -137,8 +137,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             ),
                             SizedBox(height: 30.0),
                             Text(
-                              'Connect people\naround the world',
+                              'Connect People Your Organization',
                               style: kTitleStyle,
+                              textAlign: TextAlign.center ,
                             ),
                             SizedBox(height: 15.0),
                             Text(
@@ -164,8 +165,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             ),
                             SizedBox(height: 30.0),
                             Text(
-                              'Live your life smarter\nwith us!',
+                              'Find People\'s Locations and Details Your Organization',
                               style: kTitleStyle,
+                              textAlign: TextAlign.center,
                             ),
                             SizedBox(height: 15.0),
                             Text(
@@ -191,8 +193,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             ),
                             SizedBox(height: 30.0),
                             Text(
-                              'Select your company and get nearest locations!',
+                              'Select Your Organization!',
                               style: kTitleStyle,
+                              textAlign: TextAlign.center,
                             ),
                             SizedBox(height: 30.0),
                             Center(
