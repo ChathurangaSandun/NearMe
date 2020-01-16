@@ -15,10 +15,10 @@ class PointLocationList extends StatelessWidget {
     var screenWidth = MediaQuery.of(context).size.width;
     var screenHeight = MediaQuery.of(context).size.height;
     return Positioned(
-      bottom: -15,
+      bottom: -25,
       child: SizedBox(
         width: screenWidth,
-        height: screenHeight * 0.30,
+        height: screenHeight * 0.3,
         child: Container(
           padding: EdgeInsets.symmetric(vertical: 24.0),
           height: MediaQuery.of(context).size.height * 0.3,
