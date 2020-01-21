@@ -280,39 +280,39 @@ class _GoogleMapState extends State<GoogleMapPage>
               doAction: _getCurrentMyLocation,
             ),
 
-            //menu button
-            Positioned(
-              top: realH(50),
-              left: realW(-71 * (currentExplorePercent + currentSearchPercent)),
-              child: GestureDetector(
-                onTap: () {
-                  animateMenu(true);
-                },
-                child: Opacity(
-                  opacity: 1 - (currentSearchPercent + currentExplorePercent),
-                  child: Container(
-                    width: realW(71),
-                    height: realH(71),
-                    alignment: Alignment.centerLeft,
-                    padding: EdgeInsets.only(left: realW(17)),
-                    child: Icon(
-                      Icons.menu,
-                      size: realW(34),
-                    ),
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.only(
-                            bottomRight: Radius.circular(realW(36)),
-                            topRight: Radius.circular(realW(36))),
-                        boxShadow: [
-                          BoxShadow(
-                              color: Color.fromRGBO(0, 0, 0, 0.3),
-                              blurRadius: realW(36)),
-                        ]),
-                  ),
-                ),
-              ),
-            ),
+            // //menu button
+            // Positioned(
+            //   top: realH(50),
+            //   left: realW(-71 * (currentExplorePercent + currentSearchPercent)),
+            //   child: GestureDetector(
+            //     onTap: () {
+            //       animateMenu(true);
+            //     },
+            //     child: Opacity(
+            //       opacity: 1 - (currentSearchPercent + currentExplorePercent),
+            //       child: Container(
+            //         width: realW(71),
+            //         height: realH(71),
+            //         alignment: Alignment.centerLeft,
+            //         padding: EdgeInsets.only(left: realW(17)),
+            //         child: Icon(
+            //           Icons.menu,
+            //           size: realW(34),
+            //         ),
+            //         decoration: BoxDecoration(
+            //             color: Colors.white,
+            //             borderRadius: BorderRadius.only(
+            //                 bottomRight: Radius.circular(realW(36)),
+            //                 topRight: Radius.circular(realW(36))),
+            //             boxShadow: [
+            //               BoxShadow(
+            //                   color: Color.fromRGBO(0, 0, 0, 0.3),
+            //                   blurRadius: realW(36)),
+            //             ]),
+            //       ),
+            //     ),
+            //   ),
+            // ),
             //menu
             MenuWidget(
               currentMenuPercent: currentMenuPercent,
