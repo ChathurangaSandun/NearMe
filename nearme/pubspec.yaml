@@ -70,6 +70,7 @@ flutter:
      - onboarding0.png
      - onboarding1.png
      - onboarding2.png
+     - nearmelogo.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:
