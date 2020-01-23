@@ -31,6 +31,7 @@ dependencies:
   shared_preferences: ^0.5.4+8
   flutter_google_places: ^0.2.3
   pk_skeleton: ^0.0.2
+  url_launcher: ^5.4.1
  
 dev_dependencies:
   flutter_test:
