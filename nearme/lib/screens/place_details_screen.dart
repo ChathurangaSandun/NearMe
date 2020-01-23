@@ -2,20 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:nearme/components/location_details_summary.dart';
 import 'package:nearme/components/separator.dart';
 import 'package:nearme/components/text_styles.dart';
+import 'package:nearme/models/person.dart';
 
 
 class DetailPage extends StatelessWidget {
 
-  //final Planet planet;
+  final Person person;
 
-  DetailPage();
+  DetailPage({this.person});
 
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
       body: new Container(
         constraints: new BoxConstraints.expand(),
-        color: new Color(0xFF736AB7),
+        color: Colors.white,
         child: new Stack (
           children: <Widget>[
             _getBackground(),
@@ -30,7 +31,7 @@ class DetailPage extends StatelessWidget {
 
   Container _getBackground () {
     return new Container(
-            child: new Image.network("https://i.picsum.photos/id/9/250/250.jpg",
+            child: new Image.network("http://nalandaoba.lk/web/templates/joomb008/images/header.png",
               fit: BoxFit.cover,
               height: 300.0,
             ),
@@ -45,8 +46,8 @@ class DetailPage extends StatelessWidget {
             decoration: new BoxDecoration(
               gradient: new LinearGradient(
                 colors: <Color>[
-                  new Color(0x00736AB7),
-                  new Color(0xFF736AB7)
+                  Colors.white,
+                  Colors.white,
                 ],
                 stops: [0.0, 0.9],
                 begin: const FractionalOffset(0.0, 0.0),
@@ -64,6 +65,7 @@ class DetailPage extends StatelessWidget {
               children: <Widget>[
                 new PlanetSummary(
                   horizontal: false,
+                  person : this.person
                 ),
                 new Container(
                   padding: new EdgeInsets.symmetric(horizontal: 32.0),
@@ -71,10 +73,10 @@ class DetailPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       new Text(_overviewTitle,
-                        style: Style.headerTextStyle,),
+                       style: TextStyle(color: Colors.black)),
                       new Separator(),
                       new Text(
-                         "dsafdafdasfdafdsafsadfasdfasdfasdf", style: Style.commonTextStyle),
+                         "dsafdafdasfdafdsafsadfasdfasdfasdf", style: TextStyle(color: Colors.black)),
                     ],
                   ),
                 ),
@@ -90,7 +92,7 @@ class DetailPage extends StatelessWidget {
                     .of(context)
                     .padding
                     .top),
-            child: new BackButton(color: Colors.white),
+            child: new BackButton(color: Colors.black),
           );
   }
 }
