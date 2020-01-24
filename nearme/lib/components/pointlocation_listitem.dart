@@ -9,17 +9,18 @@ class PointLocationListItem extends StatelessWidget {
   final LatLng initLatLng;
   final Function changeGoogleMapMarkercamera;
 
+  PointLocationListItem(
+      {this.person, this.changeGoogleMapMarkercamera, this.initLatLng});
 
-
-  PointLocationListItem({this.person, this.changeGoogleMapMarkercamera, this.initLatLng});
   @override
   Widget build(BuildContext context) {
     final planetThumbnail = new Container(
       margin: new EdgeInsets.symmetric(vertical: 16.0),
       alignment: FractionalOffset.centerLeft,
       child: CircleAvatar(
-        backgroundImage:
-            NetworkImage(this.person.imageUri != null ? this.person.imageUri: 'https://www.w3schools.com/howto/img_avatar.png'),
+        backgroundImage: NetworkImage(this.person.imageUri != null
+            ? this.person.imageUri
+            : 'https://www.w3schools.com/howto/img_avatar.png'),
         radius: 48,
       ),
     );
@@ -35,11 +36,17 @@ class PointLocationListItem extends StatelessWidget {
         color: Colors.white, fontSize: 18.0, fontWeight: FontWeight.w600);
 
     Widget _planetValue({String value, String image}) {
-      return new Row(children: <Widget>[
-        new Image.asset(image, height: 12.0),
-        new Container(width: 8.0),
-        new Text('35.69', style: regularTextStyle),
-      ]);
+      return GestureDetector(
+        onTap: () {
+          changeGoogleMapMarkercamera(this.person.pointLocation.latitude,
+              this.person.pointLocation.longtitude, 15.0);
+        },
+        child: new Row(children: <Widget>[
+          new Image.asset(image, height: 12.0),
+          new Container(width: 8.0),
+          new Text('35.69', style: regularTextStyle),
+        ]),
+      );
     }
 
     final planetCardContent = new Container(
@@ -68,19 +75,27 @@ class PointLocationListItem extends StatelessWidget {
           Row(
             children: <Widget>[
               ActionChip(
-                  label: Text('Call'),
+                  label: Text(
+                    'Call',
+                    style: TextStyle(color: Colors.white),
+                  ),
                   backgroundColor: Colors.green[600],
                   onPressed: () {
-                     UrlLauncher.launch('tel:${this.person.mobile.toString()}');
-                    
+                    UrlLauncher.launch('tel:${this.person.mobile.toString()}');
                   }),
               Container(width: 10),
               ActionChip(
-                  label: Text('More'),
+                  label: Text(
+                    'More',
+                    style: TextStyle(color: Colors.white),
+                  ),
                   backgroundColor: Colors.blueAccent,
                   onPressed: () {
                     Navigator.of(context).push(new PageRouteBuilder(
-                      pageBuilder: (_, __, ___) => new DetailPage( person: this.person, initLatLong: initLatLng,),
+                      pageBuilder: (_, __, ___) => new DetailPage(
+                        person: this.person,
+                        initLatLong: initLatLng,
+                      ),
                     ));
                   })
             ],
@@ -128,6 +143,8 @@ class PointLocationListItem extends StatelessWidget {
     var addressList = address.split(',');
     return addressList.length > 0
         ? addressList[addressList.length - 1].trim()
-        : address.length > 20 ? address.substring(0, 20).trim() + "..." : address;
+        : address.length > 20
+            ? address.substring(0, 20).trim() + "..."
+            : address;
   }
 }

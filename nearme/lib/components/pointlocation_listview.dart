@@ -10,7 +10,11 @@ class PointLocationList extends StatelessWidget {
   bool isLoadingNearestLocations = false;
   final LatLng initLatLng;
 
-  PointLocationList({this.nearestLocations, this.changeGoogleMapMarkercamera, this.isLoadingNearestLocations, this.initLatLng});
+  PointLocationList(
+      {this.nearestLocations,
+      this.changeGoogleMapMarkercamera,
+      this.isLoadingNearestLocations,
+      this.initLatLng});
 
   @override
   Widget build(BuildContext context) {
@@ -28,29 +32,20 @@ class PointLocationList extends StatelessWidget {
               scrollDirection: Axis.horizontal,
               itemCount: nearestLocations.length,
               itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: () {
-                    if (isLoadingNearestLocations) {
-                      changeGoogleMapMarkercamera(
-                          nearestLocations[index].pointLocation.latitude,
-                          nearestLocations[index].pointLocation.longtitude,
-                          15.0);
-                    }
-                  },
+                return Container(
+                  width: MediaQuery.of(context).size.width * 0.8,
                   child: Container(
-                    width: MediaQuery.of(context).size.width * 0.8,
-                    child: Container(
-                      child: !isLoadingNearestLocations
-                          ? PKCardSkeleton(
-                              isCircularImage: true,
-                              isBottomLinesActive: true,
-                            )
-                          : PointLocationListItem(
-                              person: nearestLocations[index],
-                              changeGoogleMapMarkercamera:
-                                  changeGoogleMapMarkercamera,
-                                  initLatLng: initLatLng,),
-                    ),
+                    child: !isLoadingNearestLocations
+                        ? PKCardSkeleton(
+                            isCircularImage: true,
+                            isBottomLinesActive: true,
+                          )
+                        : PointLocationListItem(
+                            person: nearestLocations[index],
+                            changeGoogleMapMarkercamera:
+                                changeGoogleMapMarkercamera,
+                            initLatLng: initLatLng,
+                          ),
                   ),
                 );
               }),

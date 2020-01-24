@@ -458,6 +458,9 @@ class _GoogleMapState extends State<GoogleMapPage>
         final person = Person.fromJSON(result.data["nearestLocations"][i]);
         persons.add(person);
 
+        final bitmapIcon = await BitmapDescriptor.fromAssetImage(
+            ImageConfiguration(size: Size(16, 16)), 'assets/marker.png');
+
         // create marks
         final marker = Marker(
           markerId: MarkerId(person.id.toString()),
@@ -467,7 +470,7 @@ class _GoogleMapState extends State<GoogleMapPage>
             title: person.name,
             snippet: person.mobile,
           ),
-          icon: BitmapDescriptor.defaultMarker,
+          icon: bitmapIcon,
         );
         nearestMakers.add(marker);
       }
