@@ -255,7 +255,7 @@ class _GoogleMapState extends State<GoogleMapPage>
             // MapButton(
             //   currentSearchPercent: currentSearchPercent,
             //   currentExplorePercent: currentExplorePercent,
-            //   bottom: realH(150),
+            //   bottom: realH(250),
             //   offsetX: -68,
             //   width: 68,
             //   height: 71,

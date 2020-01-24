@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:nearme/helper/ui_helper.dart';
 import 'package:nearme/models/person.dart';
 import 'package:nearme/screens/place_details_screen.dart';
 import 'package:url_launcher/url_launcher.dart' as UrlLauncher;
@@ -68,7 +67,8 @@ class PointLocationListItem extends StatelessWidget {
                   label: Text('Call'),
                   backgroundColor: Colors.green[600],
                   onPressed: () {
-                    UrlLauncher.launch('tel:${this.person.mobile.toString()}');
+                     UrlLauncher.launch('tel:${this.person.mobile.toString()}');
+                    
                   }),
               Container(width: 10),
               ActionChip(
@@ -76,8 +76,7 @@ class PointLocationListItem extends StatelessWidget {
                   backgroundColor: Colors.blueAccent,
                   onPressed: () {
                     Navigator.of(context).push(new PageRouteBuilder(
-                      pageBuilder: (_, __, ___) =>
-                          new DetailPage(person: this.person),
+                      pageBuilder: (_, __, ___) => new DetailPage( person: this.person),
                     ));
                   })
             ],
@@ -125,8 +124,6 @@ class PointLocationListItem extends StatelessWidget {
     var addressList = address.split(',');
     return addressList.length > 0
         ? addressList[addressList.length - 1].trim()
-        : address.length > 20
-            ? address.substring(0, 20).trim() + "..."
-            : address;
+        : address.length > 20 ? address.substring(0, 20).trim() + "..." : address;
   }
 }
