@@ -8,6 +8,7 @@ class GraphQlQueryHelper {
       name
       address
       mobile
+      imageUri
       pointLocation{
         id
         latitude

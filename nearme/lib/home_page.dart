@@ -210,9 +210,11 @@ class _GoogleMapState extends State<GoogleMapPage>
               },
             ),
             PointLocationList(
-                nearestLocations: nearestPointLocations,
-                changeGoogleMapMarkercamera: _changeGoogleMapMakerCamera,
-                isLoadingNearestLocations: isLoadingNearestLocations),
+              nearestLocations: nearestPointLocations,
+              changeGoogleMapMarkercamera: _changeGoogleMapMakerCamera,
+              isLoadingNearestLocations: isLoadingNearestLocations,
+              initLatLng: _initialPosition,
+            ),
             //blur
             offsetSearch != 0
                 ? BackdropFilter(
@@ -329,10 +331,9 @@ class _GoogleMapState extends State<GoogleMapPage>
     super.initState();
 
     SystemChrome.setEnabledSystemUIOverlays([]);
-    _getOrgnization().then((result){
+    _getOrgnization().then((result) {
       _getUserLocation();
     });
-    
 
     BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(128, 128)),
             'assets/icons8-user-location.png')
@@ -383,7 +384,7 @@ class _GoogleMapState extends State<GoogleMapPage>
 
   Future _getOrgnization() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var org = prefs.getInt('organization');    
+    var org = prefs.getInt('organization');
     setState(() {
       selectedOranizationId = org;
       print(selectedOranizationId);

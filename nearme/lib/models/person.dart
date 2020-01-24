@@ -7,6 +7,7 @@ class Person {
   String name;
   String address;
   String mobile;
+  String imageUri;
   Organization organization;
   PointLocation pointLocation;
 
@@ -14,22 +15,21 @@ class Person {
 
   Person({
     this.id,
-     this.name,
-     this.address,
+    this.name,
+    this.address,
     this.mobile,
+    this.imageUri,
     this.organization,
     this.pointLocation,
   });
 
   factory Person.fromJSON(dynamic data) {
     return Person(
-      id: int.parse(data["id"]),
-      name: data["name"],
-      address: data["address"],
-      mobile:  data["mobile"],
-      pointLocation: PointLocation.fromJson(data["pointLocation"])
-
-
-    );
+        id: int.parse(data["id"]),
+        name: data["name"],
+        address: data["address"],
+        mobile: data["mobile"],
+        imageUri: data["imageUri"],
+        pointLocation: PointLocation.fromJson(data["pointLocation"]));
   }
 }

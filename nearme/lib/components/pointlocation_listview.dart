@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:nearme/components/pointlocation_listitem.dart';
 import 'package:nearme/models/person.dart';
 import 'package:pk_skeleton/pk_skeleton.dart';
@@ -7,8 +8,9 @@ class PointLocationList extends StatelessWidget {
   List<Person> nearestLocations = List<Person>();
   final Function changeGoogleMapMarkercamera;
   bool isLoadingNearestLocations = false;
+  final LatLng initLatLng;
 
-  PointLocationList({this.nearestLocations, this.changeGoogleMapMarkercamera, this.isLoadingNearestLocations});
+  PointLocationList({this.nearestLocations, this.changeGoogleMapMarkercamera, this.isLoadingNearestLocations, this.initLatLng});
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +48,8 @@ class PointLocationList extends StatelessWidget {
                           : PointLocationListItem(
                               person: nearestLocations[index],
                               changeGoogleMapMarkercamera:
-                                  changeGoogleMapMarkercamera),
+                                  changeGoogleMapMarkercamera,
+                                  initLatLng: initLatLng,),
                     ),
                   ),
                 );

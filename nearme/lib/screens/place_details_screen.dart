@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:nearme/helper/ui_helper.dart';
 import 'package:nearme/models/person.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart' as UrlLauncher;
+import 'package:url_launcher/url_launcher.dart';
 
 class DetailPage extends StatelessWidget {
   final Person person;
+  final LatLng initLatLong;
   BuildContext scaffoldContext;
-
-  DetailPage({this.person});
+  DetailPage({this.person, this.initLatLong});
 
   @override
   Widget build(BuildContext context) {
@@ -55,21 +57,23 @@ class DetailPage extends StatelessWidget {
                               child: ClipRRect(
                                   borderRadius: BorderRadius.circular(30.0),
                                   child: Image.network(
-                                    "https://asiasociety.org/sites/default/files/styles/1200w/public/G/gcen_0.png?itok=AqwLP8yc",
+                                    this.person.imageUri != null
+                                        ? this.person.imageUri
+                                        : 'https://www.w3schools.com/howto/img_avatar.png',
                                     fit: BoxFit.cover,
                                   )),
                             ),
-                            Container(
-                              alignment: Alignment.topCenter,
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 10.0, vertical: 5.0),
-                                decoration: BoxDecoration(
-                                    color: Colors.yellow,
-                                    borderRadius: BorderRadius.circular(20.0)),
-                                child: Text("3.7mi away"),
-                              ),
-                            )
+                            // Container(
+                            //   alignment: Alignment.topCenter,
+                            //   child: Container(
+                            //     padding: const EdgeInsets.symmetric(
+                            //         horizontal: 10.0, vertical: 5.0),
+                            //     decoration: BoxDecoration(
+                            //         color: Colors.yellow,
+                            //         borderRadius: BorderRadius.circular(20.0)),
+                            //     child: Text("3.7mi away"),
+                            //   ),
+                            // )
                           ],
                         ),
                       ),
@@ -103,21 +107,24 @@ class DetailPage extends StatelessWidget {
                             color: Colors.grey,
                             icon: Icon(FontAwesomeIcons.instagram),
                             onPressed: () {
-                              showSnackBar(this.scaffoldContext);
+                              showSnackBar(this.scaffoldContext,
+                                  'This is not implemented');
                             },
                           ),
                           IconButton(
                             color: Colors.grey,
                             icon: Icon(FontAwesomeIcons.facebookF),
                             onPressed: () {
-                              showSnackBar(this.scaffoldContext);
+                              showSnackBar(this.scaffoldContext,
+                                  'This is not implemented');
                             },
                           ),
                           IconButton(
                             color: Colors.grey.shade600,
                             icon: Icon(FontAwesomeIcons.twitter),
                             onPressed: () {
-                              showSnackBar(this.scaffoldContext);
+                              showSnackBar(this.scaffoldContext,
+                                  'This is not implemented');
                             },
                           ),
                         ],
@@ -143,12 +150,11 @@ class DetailPage extends StatelessWidget {
                               child: Row(
                                 children: <Widget>[
                                   IconButton(
-                                    color: Colors.white,
-                                    icon: Icon(Icons.navigation),
-                                    onPressed: () {
-                                      showSnackBar(this.scaffoldContext);
-                                    },
-                                  ),
+                                      color: Colors.white,
+                                      icon: Icon(Icons.navigation),
+                                      onPressed: () async {
+                                        await navigatePointLocation();
+                                      }),
                                   IconButton(
                                     color: Colors.white,
                                     icon: Icon(Icons.email),
@@ -170,7 +176,8 @@ class DetailPage extends StatelessWidget {
                                     color: Colors.white,
                                     icon: Icon(Icons.add_call),
                                     onPressed: () {
-                                      showSnackBar(this.scaffoldContext);
+                                      showSnackBar(this.scaffoldContext,
+                                          'This is not implemented');
                                     },
                                   ),
                                 ],
@@ -203,7 +210,7 @@ class DetailPage extends StatelessWidget {
                 AppBar(
                   backgroundColor: Colors.transparent,
                   elevation: 0,
-                  title: Text("Person Details"),
+                  // title: Text("Person Details"),
                 ),
               ],
             ),
@@ -213,14 +220,33 @@ class DetailPage extends StatelessWidget {
     );
   }
 
-  void showSnackBar(BuildContext context) {
+  void showSnackBar(BuildContext context, String value) {
     SnackBar snackBar = SnackBar(
-      content: Text('Not Implemented yet!'),
+      content: Text(value),
       action: SnackBarAction(
         label: "Cancel",
         onPressed: () {},
       ),
     );
     Scaffold.of(context).showSnackBar(snackBar);
+  }
+
+  void navigatePointLocation() async {
+    String origin =
+        "${this.initLatLong.latitude},${this.initLatLong.longitude}";
+    String destination =
+        "${this.person.pointLocation.latitude},${this.person.pointLocation.longtitude}";
+
+    String url = "https://www.google.com/maps/dir/?api=1&origin=" +
+        origin +
+        "&destination=" +
+        destination +
+        "&travelmode=driving&dir_action=navigate";
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      this.showSnackBar(
+          this.scaffoldContext, 'Could not launch google locations');
+    }
   }
 }

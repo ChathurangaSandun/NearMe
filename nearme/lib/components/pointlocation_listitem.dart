@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:nearme/models/person.dart';
 import 'package:nearme/screens/place_details_screen.dart';
 import 'package:url_launcher/url_launcher.dart' as UrlLauncher;
 
 class PointLocationListItem extends StatelessWidget {
   Person person = Person();
+  final LatLng initLatLng;
   final Function changeGoogleMapMarkercamera;
 
-  PointLocationListItem({this.person, this.changeGoogleMapMarkercamera});
+
+
+  PointLocationListItem({this.person, this.changeGoogleMapMarkercamera, this.initLatLng});
   @override
   Widget build(BuildContext context) {
     final planetThumbnail = new Container(
@@ -15,7 +19,7 @@ class PointLocationListItem extends StatelessWidget {
       alignment: FractionalOffset.centerLeft,
       child: CircleAvatar(
         backgroundImage:
-            NetworkImage('https://www.w3schools.com/howto/img_avatar.png'),
+            NetworkImage(this.person.imageUri != null ? this.person.imageUri: 'https://www.w3schools.com/howto/img_avatar.png'),
         radius: 48,
       ),
     );
@@ -76,7 +80,7 @@ class PointLocationListItem extends StatelessWidget {
                   backgroundColor: Colors.blueAccent,
                   onPressed: () {
                     Navigator.of(context).push(new PageRouteBuilder(
-                      pageBuilder: (_, __, ___) => new DetailPage( person: this.person),
+                      pageBuilder: (_, __, ___) => new DetailPage( person: this.person, initLatLong: initLatLng,),
                     ));
                   })
             ],
