@@ -9,7 +9,7 @@ class Person {
   String mobile;
   String imageUri;
   Organization organization;
-  PointLocation pointLocation;
+  List<PointLocation> pointLocations;
 
   Person.empty();
 
@@ -20,16 +20,16 @@ class Person {
     this.mobile,
     this.imageUri,
     this.organization,
-    this.pointLocation,
+    this.pointLocations,
   });
 
-  factory Person.fromJSON(dynamic data) {
+  factory Person.fromJSON(Map<String, dynamic> parsedJson) {
     return Person(
-        id: int.parse(data["id"]),
-        name: data["name"],
-        address: data["address"],
-        mobile: data["mobile"],
-        imageUri: data["imageUri"],
-        pointLocation: PointLocation.fromJson(data["pointLocation"]));
+        id: int.parse(parsedJson["id"]),
+        name: parsedJson["name"],
+        address: parsedJson["address"],
+        mobile: parsedJson["mobile"],
+        imageUri: parsedJson["imageUri"],
+        pointLocations: parsedJson["pointList"]);
   }
 }

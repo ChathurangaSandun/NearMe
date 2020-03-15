@@ -50,7 +50,7 @@ class DetailPage extends StatelessWidget {
                         child: Stack(
                           children: <Widget>[
                             Container(
-                              height: screenHeight * 0.5,
+                              height: screenHeight * 0.4,
                               width: double.infinity,
                               margin: const EdgeInsets.only(
                                   left: 30.0, right: 30.0, top: 10.0),

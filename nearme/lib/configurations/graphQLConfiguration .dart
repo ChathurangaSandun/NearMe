@@ -3,7 +3,7 @@ import "package:graphql_flutter/graphql_flutter.dart";
 
 class GraphQLConfiguration {
   static HttpLink httpLink = HttpLink(
-    uri: "https://locationfinderapi20191127114428.azurewebsites.net/graphql",
+    uri: "https://locationfinderapi-dev.azurewebsites.net/graphql",
   );
 
   ValueNotifier<GraphQLClient> client = ValueNotifier(

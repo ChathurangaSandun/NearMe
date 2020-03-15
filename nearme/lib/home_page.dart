@@ -367,6 +367,8 @@ class _GoogleMapState extends State<GoogleMapPage>
   void _getUserLocation() async {
     Position position = await Geolocator()
         .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    print('a');
+    print(position.latitude);
     List<Placemark> placemark = await Geolocator()
         .placemarkFromCoordinates(position.latitude, position.longitude);
 

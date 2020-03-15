@@ -24,7 +24,7 @@ class PointLocationList extends StatelessWidget {
       bottom: -25,
       child: SizedBox(
         width: screenWidth,
-        height: screenHeight * 0.33,
+        height: screenHeight * 0.4,
         child: Container(
           padding: EdgeInsets.symmetric(vertical: 24.0),
           height: MediaQuery.of(context).size.height * 0.3,
