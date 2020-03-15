@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:nearme/helper/application_helpers.dart';
 import 'package:nearme/helper/ui_helper.dart';
 import 'package:nearme/models/person.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:nearme/models/pointLocationTypeEnum.dart';
+import 'package:nearme/models/pointlocation.dart';
 import 'package:url_launcher/url_launcher.dart' as UrlLauncher;
 import 'package:url_launcher/url_launcher.dart';
 
@@ -17,6 +20,8 @@ class DetailPage extends StatelessWidget {
     final Color color1 = Color(0xFF59C2FF);
     final Color color2 = Color(0xFF1270E3);
     //final String image = avatars[0];
+    final String homeAddress = ApplicationHelper.getHomeAddressFromPointList(
+        this.person.pointLocations, PointTypes.Home);
     return Scaffold(
       body: Column(
         children: <Widget>[
@@ -88,12 +93,12 @@ class DetailPage extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
                           Icon(
-                            Icons.location_on,
+                            Icons.home,
                             size: 16.0,
                             color: Colors.grey,
                           ),
                           Text(
-                            this.person.address,
+                            homeAddress,
                             style: TextStyle(color: Colors.grey.shade600),
                           )
                         ],
@@ -234,8 +239,8 @@ class DetailPage extends StatelessWidget {
   void navigatePointLocation() async {
     String origin =
         "${this.initLatLong.latitude},${this.initLatLong.longitude}";
-    String destination =
-        "${this.person.pointLocation.latitude},${this.person.pointLocation.longtitude}";
+    String destination = '';
+    //  "${this.person.pointLocation.latitude},${this.person.pointLocation.longtitude}";
 
     String url = "https://www.google.com/maps/dir/?api=1&origin=" +
         origin +

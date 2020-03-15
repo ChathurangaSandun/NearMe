@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:nearme/helper/application_helpers.dart';
 import 'package:nearme/models/person.dart';
+import 'package:nearme/models/pointLocationTypeEnum.dart';
+import 'package:nearme/models/pointlocation.dart';
 import 'package:nearme/screens/place_details_screen.dart';
 import 'package:url_launcher/url_launcher.dart' as UrlLauncher;
 
@@ -38,8 +41,8 @@ class PointLocationListItem extends StatelessWidget {
     Widget _planetValue({String value, String image}) {
       return GestureDetector(
         onTap: () {
-          changeGoogleMapMarkercamera(this.person.pointLocation.latitude,
-              this.person.pointLocation.longtitude, 15.0);
+          // changeGoogleMapMarkercamera(this.person.pointLocation.latitude,
+          //     this.person.pointLocation.longtitude, 15.0);
         },
         child: new Row(children: <Widget>[
           new Image.asset(image, height: 12.0),
@@ -67,7 +70,11 @@ class PointLocationListItem extends StatelessWidget {
               width: 36.0,
               color: new Color(0xff00c6ff)),
           Container(height: 5.0),
-          Text(getCityFromAddress(this.person.address),
+          Text(
+              getCityFromAddress(
+                ApplicationHelper.getHomeAddressFromPointList(
+                    this.person.pointLocations, PointTypes.Home),
+              ),
               style: subHeaderTextStyle),
           Container(height: 5.0),
           Text(this.person.mobile, style: subHeaderTextStyle),

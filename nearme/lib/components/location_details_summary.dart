@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:nearme/components/separator.dart';
 import 'package:nearme/components/text_styles.dart';
+import 'package:nearme/helper/application_helpers.dart';
 import 'package:nearme/models/person.dart';
+import 'package:nearme/models/pointLocationTypeEnum.dart';
 import 'package:nearme/screens/place_details_screen.dart';
 
 class PlanetSummary extends StatelessWidget {
@@ -27,7 +29,7 @@ class PlanetSummary extends StatelessWidget {
         ),
       ),
     );
-    
+
     final planetCardContent = new Container(
       margin: new EdgeInsets.fromLTRB(
           horizontal ? 76.0 : 16.0, horizontal ? 16.0 : 42.0, 16.0, 16.0),
@@ -40,7 +42,10 @@ class PlanetSummary extends StatelessWidget {
           new Text(this.person.name, style: Style.titleTextStyle),
           new Separator(),
           new Container(height: 10.0),
-          new Text(this.person.address, style: Style.commonTextStyle),
+          new Text(
+              ApplicationHelper.getHomeAddressFromPointList(
+                  this.person.pointLocations, PointTypes.Home),
+              style: Style.commonTextStyle),
           new Container(height: 4.0),
           new Text(this.person.mobile, style: Style.commonTextStyle),
         ],

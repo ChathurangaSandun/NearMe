@@ -6,7 +6,6 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-
 import '../helper/ui_helper.dart';
 import 'dart:async';
 import 'package:device_info/device_info.dart';
@@ -35,14 +34,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     _selectedCompany = null; // _dropdownMenuItems[0].value;
     super.initState();
   }
-  
-  void _getOrgnization() async{
-      SharedPreferences prefs = await SharedPreferences.getInstance();      
-      var org = await prefs.getInt('organization');
-      print(org);
-      if(org != null){
-        Navigator.of(context).pushReplacementNamed("/home");
-      }
+
+  void _getOrgnization() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var org = await prefs.getInt('organization');
+    print(org);
+    if (org != null) {
+      Navigator.of(context).pushReplacementNamed("/home");
+    }
   }
 
   List<DropdownMenuItem<Company>> buildDropdownMenuItems(List companies) {
@@ -139,7 +138,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             Text(
                               'Connect People Your Organization',
                               style: kTitleStyle,
-                              textAlign: TextAlign.center ,
+                              textAlign: TextAlign.center,
                             ),
                             SizedBox(height: 15.0),
                             Text(
@@ -292,7 +291,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 onTap: () async {
                   if (_selectedCompany != null) {
                     var info = await _saveDeviceInfo(_selectedCompany);
-                    
                   } else {
                     _showDialog();
                   }
@@ -350,15 +348,27 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
     }
 
-    var info = DeviceInfromation(osModel: "Android", uuid: androidInfo.androidId, model: androidInfo.model, osVersion:androidInfo.version.release);
-    var json =  '{	"OsModel": "'+info.osModel+'",	"Model": "'+info.model+'",	"Uuid": "'+info.uuid+'",	"Osversion": "'+info.osVersion+'"}';
-    final response = await http.post('https://locationfinderapi20191127114428.azurewebsites.net/api/Devices',
+    var info = DeviceInfromation(
+        osModel: "Android",
+        uuid: androidInfo.androidId,
+        model: androidInfo.model,
+        osVersion: androidInfo.version.release);
+    var json = '{	"OsModel": "' +
+        info.osModel +
+        '",	"Model": "' +
+        info.model +
+        '",	"Uuid": "' +
+        info.uuid +
+        '",	"Osversion": "' +
+        info.osVersion +
+        '"}';
+    final response = await http.post(
+        'https://locationfinderapi20191127114428.azurewebsites.net/api/Devices',
         headers: {HttpHeaders.contentTypeHeader: 'application/json'},
-        body: json
-        );
+        body: json);
 
-    if(response.statusCode == 200){
-      SharedPreferences prefs = await SharedPreferences.getInstance();      
+    if (response.statusCode == 200) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setInt('organization', selectedCompany.id);
       Navigator.of(context).pushReplacementNamed("/home");
     }
@@ -373,7 +383,7 @@ class Company {
 
   static List<Company> getCompanies() {
     return <Company>[
-      Company(5, 'Tiqri'),
+      Company(1, 'Tiqri'),
       Company(2, 'Nalanda OBA'),
     ];
   }

@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:nearme/helper/graphQL_api_client_helper.dart';
 import 'package:nearme/helper/graphql_query_helper.dart';
 import 'package:nearme/models/person.dart';
@@ -15,6 +16,8 @@ import 'components/pointlocation_listview.dart';
 import 'configurations/graphQLConfiguration .dart';
 import 'helper/ui_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'models/pointlocation.dart';
 
 class GoogleMapPage extends StatefulWidget {
   GoogleMapPage();
@@ -51,7 +54,7 @@ class _GoogleMapState extends State<GoogleMapPage>
   static int selectedOranizationId = 0;
 
   static LatLng _initialPosition;
-  final Set<Marker> _markers = {};
+  final List<Marker> _markers = List<Marker>();
   static LatLng _lastMapPosition = _initialPosition;
   BitmapDescriptor _myIcon;
   //google map
@@ -197,7 +200,7 @@ class _GoogleMapState extends State<GoogleMapPage>
         child: Stack(
           children: <Widget>[
             GoogleMap(
-              markers: _markers,
+              markers: _markers.toSet(),
               myLocationEnabled: true,
               myLocationButtonEnabled: false,
               mapToolbarEnabled: false,
@@ -431,7 +434,7 @@ class _GoogleMapState extends State<GoogleMapPage>
       icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
     );
 
-    print(selectedOranizationId);
+    print(_markers);
     await this._getDirection(latitude, longtitude, selectedOranizationId);
     await _changeGoogleMapMakerCamera(latitude, longtitude, 13.0);
   }
@@ -450,37 +453,40 @@ class _GoogleMapState extends State<GoogleMapPage>
         Person(),
       ];
     });
-    var result = await _graphQLClient.execute(_graphQLQeuryHelper
+    QueryResult result = await _graphQLClient.execute(_graphQLQeuryHelper
         .getNearestPersons(latitude, longtitude, organizationId));
     List<Person> persons = List<Person>();
     List<Marker> nearestMakers = List<Marker>();
 
     if (!result.hasException) {
-      for (var i = 0; i < result.data["nearestLocations"].length; i++) {
-        final person = Person.fromJSON(result.data["nearestLocations"][i]);
+      var resultList = Data.fromJson(result.data);
+      resultList.nearestLocations.forEach((person) {
         persons.add(person);
 
-        final bitmapIcon = await BitmapDescriptor.fromAssetImage(
-            ImageConfiguration(size: Size(16, 16)), 'assets/marker.png');
+        person.pointLocations.forEach((point) {
+          final bitmapIcon = BitmapDescriptor.fromAssetImage(
+              ImageConfiguration(size: Size(16, 16)), 'assets/marker.png');
 
-        // create marks
-        final marker = Marker(
-          markerId: MarkerId(person.id.toString()),
-          position: LatLng(
-              person.pointLocation.latitude, person.pointLocation.longtitude),
-          infoWindow: InfoWindow(
-            title: person.name,
-            snippet: person.mobile,
-          ),
-          icon: bitmapIcon,
-        );
-        nearestMakers.add(marker);
-      }
+          // create marks
+          final marker = Marker(
+            markerId: MarkerId(person.id.toString() + point.type),
+            position: LatLng(point.latitude, point.longtitude),
+            infoWindow: InfoWindow(
+              title: person.id.toString() + point.type,
+              snippet: person.mobile,
+            ),
+            //icon: bitmapIcon,
+          );
+          nearestMakers.add(marker);
+        });
+      });
 
       setState(() {
+        print(_markers.length);
         this.isLoadingNearestLocations = true;
         nearestPointLocations = persons;
         _markers.addAll(nearestMakers);
+        print(_markers.length);
       });
     }
   }
