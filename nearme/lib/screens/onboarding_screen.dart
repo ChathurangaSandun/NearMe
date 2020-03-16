@@ -363,7 +363,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         info.osVersion +
         '"}';
     final response = await http.post(
-        'https://locationfinderapi20191127114428.azurewebsites.net/api/Devices',
+        'https://locationfinderapiprd.azurewebsites.net/api/Devices',
         headers: {HttpHeaders.contentTypeHeader: 'application/json'},
         body: json);
 
@@ -383,8 +383,8 @@ class Company {
 
   static List<Company> getCompanies() {
     return <Company>[
-      Company(1, 'Tiqri'),
-      Company(2, 'Nalanda OBA'),
+      Company(1, 'Nalanda OBA'),
+      Company(2, 'Tiqri'),
     ];
   }
 }
