@@ -6,6 +6,7 @@ import 'package:nearme/models/person.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:nearme/models/pointLocationTypeEnum.dart';
 import 'package:nearme/models/pointlocation.dart';
+import 'package:nearme/screens/onboarding_screen.dart';
 import 'package:url_launcher/url_launcher.dart' as UrlLauncher;
 import 'package:url_launcher/url_launcher.dart';
 
@@ -22,6 +23,10 @@ class DetailPage extends StatelessWidget {
     //final String image = avatars[0];
     final String homeAddress = ApplicationHelper.getHomeAddressFromPointList(
         this.person.pointLocations, PointTypes.Home);
+    final String companyAddress =
+        ApplicationHelper.getCompanyAddressFromPointList(
+            this.person.pointLocations, PointTypes.Company);
+
     return Scaffold(
       body: Column(
         children: <Widget>[
@@ -62,7 +67,8 @@ class DetailPage extends StatelessWidget {
                               child: ClipRRect(
                                   borderRadius: BorderRadius.circular(30.0),
                                   child: Image.network(
-                                    this.person.imageUri != null
+                                    (this.person.imageUri != null ||
+                                            this.person.imageUri != '')
                                         ? this.person.imageUri
                                         : 'https://www.w3schools.com/howto/img_avatar.png',
                                     fit: BoxFit.cover,
@@ -88,20 +94,43 @@ class DetailPage extends StatelessWidget {
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 16.0),
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          Icon(
-                            Icons.home,
-                            size: 16.0,
-                            color: Colors.grey,
-                          ),
-                          Text(
-                            homeAddress,
-                            style: TextStyle(color: Colors.grey.shade600),
-                          )
-                        ],
+                      Visibility(
+                        visible: (homeAddress != '' || homeAddress != null),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            Icon(
+                              Icons.home,
+                              size: 16.0,
+                              color: Colors.grey,
+                            ),
+                            Text(
+                              homeAddress,
+                              style: TextStyle(color: Colors.grey.shade600),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 10.0),
+                      Visibility(
+                        visible:
+                            (companyAddress != '' || companyAddress != null),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            Icon(
+                              Icons.work,
+                              size: 16.0,
+                              color: Colors.grey,
+                            ),
+                            Text(
+                              companyAddress,
+                              style: TextStyle(color: Colors.grey.shade600),
+                            ),
+                          ],
+                        ),
                       ),
                       SizedBox(height: 5.0),
                       Row(
@@ -158,7 +187,8 @@ class DetailPage extends StatelessWidget {
                                       color: Colors.white,
                                       icon: Icon(Icons.navigation),
                                       onPressed: () async {
-                                        await navigatePointLocation();
+                                        await navigatePointLocation(
+                                            this.person.pointLocations);
                                       }),
                                   IconButton(
                                     color: Colors.white,
@@ -196,7 +226,6 @@ class DetailPage extends StatelessWidget {
                                 ),
                                 backgroundColor: Colors.white,
                                 onPressed: () {
-                                  print('dfdfd');
                                   UrlLauncher.launch(
                                       'tel:${this.person.mobile.toString()}');
                                 },
@@ -236,22 +265,37 @@ class DetailPage extends StatelessWidget {
     Scaffold.of(context).showSnackBar(snackBar);
   }
 
-  void navigatePointLocation() async {
-    String origin =
-        "${this.initLatLong.latitude},${this.initLatLong.longitude}";
-    String destination = '';
-    //  "${this.person.pointLocation.latitude},${this.person.pointLocation.longtitude}";
+  void navigatePointLocation(List<PointLocation> points) async {
+    PointLocation homePoint = null;
+    PointLocation companyPoint = null;
+    points.forEach((PointLocation point) {
+      if (point.type == 'HOME') {
+        homePoint = point;
+      }
 
-    String url = "https://www.google.com/maps/dir/?api=1&origin=" +
-        origin +
-        "&destination=" +
-        destination +
-        "&travelmode=driving&dir_action=navigate";
-    if (await canLaunch(url)) {
-      await launch(url);
+      if (point.type == 'COMPANY') {
+        companyPoint = point;
+      }
+    });
+
+    if (homePoint != null && companyPoint != null) {
+      String origin = "${companyPoint.latitude},${companyPoint.latitude}";
+      String destination = "${homePoint.latitude},${homePoint.latitude}";
+
+      String url = "https://www.google.com/maps/dir/?api=1&origin=" +
+          origin +
+          "&destination=" +
+          destination +
+          "&travelmode=driving&dir_action=navigate";
+      if (await canLaunch(url)) {
+        await launch(url);
+      } else {
+        this.showSnackBar(
+            this.scaffoldContext, 'Could not launch google locations');
+      }
     } else {
-      this.showSnackBar(
-          this.scaffoldContext, 'Could not launch google locations');
+      showSnackBar(
+          this.scaffoldContext, 'Cannot found home or company address.');
     }
   }
 }
