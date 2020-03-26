@@ -469,10 +469,10 @@ class _GoogleMapState extends State<GoogleMapPage>
 
           // create marks
           final marker = Marker(
-            markerId: MarkerId(person.id.toString() + point.type),
+            markerId: MarkerId(person.name + '_' + point.type),
             position: LatLng(point.latitude, point.longtitude),
             infoWindow: InfoWindow(
-              title: person.id.toString() + point.type,
+              title: person.name + ' ' + point.type.toLowerCase(),
               snippet: person.mobile,
             ),
             //icon: bitmapIcon,
