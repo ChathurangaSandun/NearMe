@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
-import 'configurations/graphQLConfiguration .dart';
+import 'configurations/graphQLConfiguration.dart';
 import 'home_page.dart';
 import 'screens/onboarding_screen.dart';
 import 'configurations/application_routes.dart';

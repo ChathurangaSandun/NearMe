@@ -13,7 +13,7 @@ import 'package:nearme/helper/graphql_query_helper.dart';
 import 'package:nearme/models/person.dart';
 import 'components/components.dart';
 import 'components/pointlocation_listview.dart';
-import 'configurations/graphQLConfiguration .dart';
+import 'configurations/graphQLConfiguration.dart';
 import 'helper/ui_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

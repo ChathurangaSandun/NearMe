@@ -1,5 +1,5 @@
 import 'package:graphql_flutter/graphql_flutter.dart';
-import '../configurations/graphQLConfiguration .dart';
+import '../configurations/graphQLConfiguration.dart';
 
 class GraphQLApiClient{
 
