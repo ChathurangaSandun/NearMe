@@ -1,4 +1,4 @@
-package com.example.nearme
+package com.clivekumara.nearme
 
 import android.os.Bundle
 
